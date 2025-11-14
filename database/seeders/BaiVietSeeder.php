@@ -2,49 +2,114 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
 
 class BaiVietSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     */
     public function run(): void
     {
-        DB::table('bai_viets')->delete();
-
         DB::table('bai_viets')->truncate();
 
+        $now = Carbon::now();
+
         DB::table('bai_viets')->insert([
-            ['id_chuyen_muc' => 2, 'ten_bai_viet' => '50 địa điểm du lịch Đà Nẵng HẤP DẪN NHẤT bạn tha hồ lựa chọn', 'mo_ta_ngan' => 'Du lịch Đà Nẵng thì nên đi đâu, chơi gì? Top 50 địa điểm du lịch Đà Nẵng sẽ giới thiệu đến bạn những địa điểm du lịch HOT nhất, HẤP DẪN nhất mà bạn không thể bỏ qua khi đến với thành phố của những cây cầu.', 'mo_ta_chi_tiet' => 'Đưa vào hoạt động năm 2013, điểm tham quan Đà Nẵng cầu Rồng là một trong những địa điểm du lịch mới ở Đà Nẵng hấp dẫn du khách. Với thiết kế độc đáo mang hình dáng con rồng bắc qua sông Hàn thơ mộng, cầu Rồng là cây cầu thứ 7 tạo nên biểu tượng “thành phố của những cây cầu”. Đến đây vào các ngày cuối tuần, bạn còn xem được cảnh rồng phun lửa, phun nước sống động. Nằm ở phía nam bán đảo Sơn Trà, Bãi Bụt là một trong những địa điểm du lịch Đà Nẵng miễn phí đáng đến nhất. Được mệnh danh là tuyệt cảnh dưới chân Chùa Linh Ứng, Bãi Bụt là nơi nhiều du khách trong và ngoài nước chọn làm nơi tham quan, tắm biển, ngắm san hô, khám phá các loài sinh vật biển,... khi đến du lịch tại Đà Nẵng.', 'hinh_anh' => 'https://statics.vinpearl.com/du-lich-da-nang_1657939501.JPG', 'tinh_trang' => '1'],
-            ['id_chuyen_muc' => 2, 'ten_bai_viet' => 'Các điểm ngắm lễ hội pháo hoa Đà Nẵng', 'mo_ta_ngan' => 'Pháo hoa Đà Nẵng có thể quan sát ở các khu vực xung quanh đường Bạch Đằng, Trần Hưng Đạo, trên những cây cầu bắc qua sông Hàn. ', 'mo_ta_chi_tiet' => 'Pháo hoa Đà Nẵng có thể quan sát ở các khu vực xung quanh đường Bạch Đằng, Trần Hưng Đạo, trên những cây cầu bắc qua sông Hàn.
+            // === ẨM THỰC (id_chuyen_muc = 1) ===
+            [
+                'id_chuyen_muc' => 1,
+                'ten_bai_viet' => 'Bánh mì Hội An – Hương vị di sản giữa lòng phố cổ',
+                'mo_ta_ngan' => 'Không chỉ là món ăn sáng, bánh mì Hội An là cả một nghệ thuật: vỏ giòn rụm, nhân đầy đặn, nước sốt đậm đà – đủ sức chinh phục mọi tín đồ ẩm thực.',
+                'mo_ta_chi_tiet' => '<p>Đến Hội An, bạn không thể bỏ qua <strong>bánh mì Phượng</strong> hay <em>bánh mì Madam Khanh</em>. Bánh mì ở đây khác biệt nhờ lớp vỏ baguette nướng than giòn tan, pate nhà làm mịn màng, thịt nướng thơm lừng và đặc biệt là thứ nước sốt bí truyền cay nồng, ngọt nhẹ.</p><p>Mỗi ổ bánh mì là một câu chuyện: từ cách chọn nguyên liệu tươi mỗi sáng, đến bí kíp ướp thịt gia truyền qua 3 thế hệ.</p>',
+                'hinh_anh' => 'https://images.pexels.com/photos/376464/pexels-photo-376464.jpeg?w=1600',
+                'tinh_trang' => 1,
+                'created_at' => $now->copy()->subHours(5),
+                'updated_at' => $now,
+            ],
+            [
+                'id_chuyen_muc' => 1,
+                'ten_bai_viet' => 'Cà phê trứng Hà Nội – Ly ký ức giữa lòng phố cổ',
+                'mo_ta_ngan' => 'Một thìa cà phê béo ngậy, một ngụm đắng ngọt hòa quyện – cà phê trứng không chỉ là đồ uống, mà là biểu tượng của sự sáng tạo và tinh tế.',
+                'mo_ta_chi_tiet' => '<p>Ra đời từ thời khan hiếm sữa, cà phê trứng được sáng tạo bằng lòng đỏ trứng gà đánh bông với đường và chút bơ. Khi rót cà phê đen nóng hổi vào, lớp kem trứng nổi lên như đám mây, tạo nên hương vị khó quên.</p><p>Quán Giảng, quán Đinh, quán Năng – mỗi nơi một phong cách, nhưng đều giữ được linh hồn của món đồ uống huyền thoại này.</p>',
+                'hinh_anh' => 'https://images.pexels.com/photos/312418/pexels-photo-312418.jpeg?w=1600',
+                'tinh_trang' => 1,
+                'created_at' => $now->copy()->subDays(1),
+                'updated_at' => $now,
+            ],
+            [
+                'id_chuyen_muc' => 1,
+                'ten_bai_viet' => 'Bún bò Huế – Tô lửa đỏ giữa cố đô',
+                'mo_ta_ngan' => 'Nước dùng trong veo mà đậm đà, sợi bún dai mềm, miếng thịt bò tái ngọt lịm – bún bò Huế là bản giao hưởng của gia vị và tâm huyết.',
+                'mo_ta_chi_tiet' => '<p>Khác với phở, bún bò Huế dùng <strong>xương ống ninh 12 tiếng</strong>, thêm mắm ruốc, sả, ớt sa tế tạo nên màu đỏ đặc trưng và mùi thơm nồng nàn. Mỗi tô bún là sự cân bằng hoàn hảo giữa cay, mặn, ngọt, chua.</p><p>Ăn kèm rau sống, giá đỗ, hoa chuối thái mỏng – tất cả hòa quyện thành một trải nghiệm ẩm thực khó quên.</p>',
+                'hinh_anh' => 'https://images.pexels.com/photos/699953/pexels-photo-699953.jpeg?w=1600',
+                'tinh_trang' => 1,
+                'created_at' => $now->copy()->subDays(2),
+                'updated_at' => $now,
+            ],
 
-Lễ hội pháo hoa quốc tế Đà Nẵng lần thứ 12 năm 2024 (DIFF 2024) khai mạc ngày 8/6 và kéo dài đến 13/7.
+            // === ĐỊA ĐIỂM DU LỊCH (id_chuyen_muc = 2) ===
+            [
+                'id_chuyen_muc' => 2,
+                'ten_bai_viet' => 'Cầu Vàng Đà Nẵng – Bàn tay khổng lồ nâng dải lụa giữa mây trời',
+                'mo_ta_ngan' => 'Biểu tượng mới của du lịch Việt Nam: cây cầu cong cong nằm trong lòng bàn tay đá khổng lồ, phía dưới là rừng nguyên sinh xanh mướt.',
+                'mo_ta_chi_tiet' => '<p>Ra mắt năm 2018, <strong>Cầu Vàng</strong> nhanh chóng trở thành điểm check-in hot nhất Đà Nẵng. Ở độ cao 1.400m so với mực nước biển, bạn sẽ cảm nhận được hơi thở của núi rừng, mây trôi lững lờ quanh bàn chân.</p><p>Thời điểm đẹp nhất: sáng sớm (mây mù) hoặc hoàng hôn (ánh nắng vàng rực rỡ).</p>',
+                'hinh_anh' => 'https://images.pexels.com/photos/753626/pexels-photo-753626.jpeg?w=1600',
+                'tinh_trang' => 1,
+                'created_at' => $now->copy()->subHours(8),
+                'updated_at' => $now,
+            ],
+            [
+                'id_chuyen_muc' => 2,
+                'ten_bai_viet' => 'Hòn Khô Quy Nhơn – Viên ngọc ẩn giữa biển khơi',
+                'mo_ta_ngan' => 'Chỉ cách đất liền 15 phút đi canoe, Hòn Khô hiện lên như một bức tranh: nước trong veo, rạn san hô rực rỡ, hải sản tươi sống.',
+                'mo_ta_chi_tiet' => '<p>Khi thủy triều xuống, con đường cát trắng hiện ra nối đảo với đất liền – hiện tượng “đi bộ dưới biển” độc đáo. Lặn ngắm san hô, ăn ghẹ hấp, uống dừa tươi – tất cả chỉ trong một buổi sáng.</p><p>Lưu ý: chỉ có 2 homestay, nên đặt trước nếu muốn ngủ lại trên đảo.</p>',
+                'hinh_anh' => 'https://images.pexels.com/photos/358457/pexels-photo-358457.jpeg?w=1600',
+                'tinh_trang' => 1,
+                'created_at' => $now->copy()->subDays(3),
+                'updated_at' => $now,
+            ],
+            [
+                'id_chuyen_muc' => 2,
+                'ten_bai_viet' => 'Làng chài Nhơn Hải – Nơi bình yên còn sót lại',
+                'mo_ta_ngan' => 'Xa trung tâm Quy Nhơn 20km, làng chài Nhơn Hải vẫn giữ nguyên vẻ hoang sơ: thuyền thúng, lưới cá, tiếng sóng vỗ và những bữa cơm hải sản 50k.',
+                'mo_ta_chi_tiet' => '<p>Mỗi sáng, ngư dân gánh cá tươi lên chợ. Du khách có thể mua mực một nắng, cá nục hấp, ghẹ luộc ngay tại bãi biển. Buổi chiều, ngắm hoàng hôn từ đồi cát – không gian yên bình hiếm có.</p>',
+                'hinh_anh' => 'https://images.pexels.com/photos/1458699/pexels-photo-1458699.jpeg?w=1600',
+                'tinh_trang' => 1,
+                'created_at' => $now->copy()->subDays(4),
+                'updated_at' => $now,
+            ],
 
-DIFF 2024 có chủ đề "Made in Unity - Kết nối toàn cầu - Rạng rỡ năm châu", với thông điệp về một thế giới hòa bình, hữu nghị, nhân văn và tôn vinh những giá trị truyền cảm hứng cho cộng đồng. Các đêm biểu diễn gồm Việt Nam - ĐKVĐ Pháp (8/6 - khai mạc), Italy - Mỹ (15/6), Đức - Ba Lan (22/6), Trung Quốc - Phần Lan (29/6) và đêm chung kết ngày 13/7. Mỗi đêm có một chủ đề riêng.
-
-Nếu có mặt ở Đà Nẵng dịp này, du khách có thể chiêm ngưỡng các màn pháo hoa từ những địa điểm sau đây, theo gợi ý của anh Hùng Nguyễn, đại diện một công ty du lịch tại Đà Nẵng, website của Trung tâm Xúc tiến Du lịch Đà Nẵng và BTC DIFF 2024.
-
-Sân khấu chính
-
-Sân khấu chính của sự kiện nằm tại vỉa hè đường Trần Hưng Đạo, đối diện khu vực bắn pháo hoa cuối đường Bạch Đằng giao với đường 3/2. Đây là vị trí quan sát tốt nhất tất cả các màn tranh tài với khung cảnh đẹp, không phải chen lấn và không bị vướng tầm nhìn.
-
-Sân khấu có sức chứa hơn 10.000 chỗ ngồi. Giá vé dao động từ 800.000 đồng đến 3 triệu đồng, với 5 hạng ghế khác nhau.', 'hinh_anh' => 'https://i1-dulich.vnecdn.net/2024/06/07/cau-1717753399-5280-1717754470.jpg?w=1020&h=0&q=100&dpr=1&fit=crop&s=DrYUHujUeWU8BEPrHeeLTQ', 'tinh_trang' => '1'],
-            ['id_chuyen_muc' => 1, 'ten_bai_viet' => 'Top 30+ đặc sản Đà Nẵng nên thưởng thức và mua về làm quà', 'mo_ta_ngan' => '30+ món ngon, đặc sản Đà Nẵng mà bạn nhất định phải thử và mua về làm quà cho người thân, gia đình, bạn bè trong chuyến du lịch sắp tới, đừng bỏ qua nha!', 'mo_ta_chi_tiet' => 'Món ăn đặc sản Đà Nẵng không thiếu, thậm chí có ngồi kể cả ngày cũng không hết được cả trăm thức quà ngon lành mang đậm văn hóa ẩm thực miền Trung. Nhưng để gọi là đặc sắc nhất, nổi bật nhất, du khách ghé thăm không thể không thử phải kể đến mấy chục món trứ danh dưới đây. Quả không ngoa khi nói Đà Nẵng là xứ ẩm thực đặc biệt, đa dạng với đủ các loại món ngon mà món nào ăn một lần người ta cũng sẽ nhớ mãi.', 'hinh_anh' => 'https://statics.vinpearl.com/dac-san-da-nang-1.jpg', 'tinh_trang' => '1'],
-            ['id_chuyen_muc' => 1, 'ten_bai_viet' => 'Ba món Việt vào top 100 món đường phố ngon nhất thế giới', 'mo_ta_ngan' => 'Bánh mì, phở và cơm tấm của Việt Nam được gọi tên trong top 100 món ăn đường phố ngon nhất thế giới của Taste Atlas. ', 'mo_ta_chi_tiet' => 'Bánh mì, phở và cơm tấm của Việt Nam được gọi tên trong top 100 món ăn đường phố ngon nhất thế giới của Taste Atlas.
-
-Danh sách mới 100 món ăn đường phố ngon nhất thế giới do chuyên trang ẩm thực Taste Atlas cập nhật giữa tháng 5, có 3 món ăn của Việt Nam được nhắc đến gồm bánh mì, phở và cơm tấm.
-
-Tiêu chí bình chọn các món ăn dựa trên ý kiến của các chuyên gia, thực khách khắp thế giới và mức độ nổi tiếng, hương vị độc đáo cũng như được nhiều người yêu thích của mỗi món.
-
-Bánh mì của Việt Nam xếp thứ 6 trên 100, với tổng 4,6 sao trên 5. Các chuyên gia của Taste Atlas cũng hướng dẫn thực khách quốc tế phát âm món ăn này là "bun mee" và giới thiệu đây là món ăn phổ biến của người dân địa phương. Thành phần chính gồm bánh mì giòn baguette, một di sản của ẩm thực Pháp du nhập vào Việt Nam, các loại nhân ăn kèm gồm thịt, ngò, ớt, dưa chua, rau thơm thể hiện khẩu vị của người Việt.', 'hinh_anh' => 'https://i1-dulich.vnecdn.net/2024/05/29/bd4aea842dba436583ba436a4f77e4-5308-6314-1716949326.jpg?w=1020&h=0&q=100&dpr=1&fit=crop&s=Glw8uYohuPvfdnGM1cxFsg', 'tinh_trang' => '1'],
-            ['id_chuyen_muc' => 1, 'ten_bai_viet' => 'Thưởng thức dạ yến hoàng cung Huế', 'mo_ta_ngan' => 'Với 2 triệu đồng mỗi người, thực khách được thưởng thức 7 món ẩm thực, nghe ca Huế và tìm hiểu về yến tiệc của giới quý tộc trong hoàng cung.', 'mo_ta_chi_tiet' => 'Dạ yến hoàng cung là hoạt động trong chuỗi sự kiện thuộc tuần lễ Festival nghệ thuật quốc tế Huế 2024. Đêm hội ẩm thực diễn ra tối 8/6 tại sân điện Cần Chánh bên trong Đại nội Huế. Dạ yến hoàng cung tái hiện Ngự yến của vua triều Nguyễn thiết đãi các hoàng thân trong cung cấm ngày xưa. Trước khi dạ yến bắt đầu, một diễn viên thủ vai vị quan đứng giữa sân khấu, lắc chiếc chuông nhỏ để ra hiệu dừng đội nhạc và sự chú ý của quan khách. Sau đó quan bẩm báo những món ăn sẽ được đưa lên bàn tiệc. Tiếp đó, đội ngũ phục vụ trong tà áo dài kiểu cung nữ cung đình sẽ đưa các món ăn đến từng bàn. Theo ban tổ chức, chương trình Dạ yến hoàng cung ngoài việc quảng bá du lịch còn giúp thực khách có cơ hội trải nghiệm ẩm thực cung đình một cách chân thực. Các món ăn trong buổi dạ yến được thực hiện bởi các đầu bếp của một khách sạn ở Huế. Thực đơn năm nay có 7 món, thay đổi so với các kì Festival trước.', 'hinh_anh' => 'https://i1-dulich.vnecdn.net/2024/06/09/BIT-8011-1717896647.jpg?w=1200&h=0&q=100&dpr=1&fit=crop&s=q5wOEf-J9r3buwzVzEJPTw', 'tinh_trang' => '1'],
-            ['id_chuyen_muc' => 2, 'ten_bai_viet' => 'Ngũ Hành Sơn Đà Nẵng - “Nam Thiên Danh Thắng” trứ danh', 'mo_ta_ngan' => 'Ngũ Hành Sơn là quần thể gồm 6 ngọn núi mọc gần nhau, quy tụ đủ những vẻ đẹp từ thiên nhiên và tâm linh, mang đến cho du khách hành trình tham quan, khám phá thắng cảnh tuyệt vời.', 'mo_ta_chi_tiet' => 'Ngũ Hành Sơn là tuyệt tác về cảnh quan thiên nhiên mà tạo hóa ban tặng cho vùng đất Đà Nẵng. Có vẻ đẹp hài hòa của vùng sinh thái tự nhiên đan xen cùng với đời sống văn hóa tâm linh nên nơi đây càng ngày càng thu hút khách du lịch đến tham quan hàng năm. Địa điểm du lịch Đà Nẵng Ngũ Hành Sơn nằm ở khu vực có vị trí địa lý hết sức thuận lợi, cách trung tâm thành phố Đà Nẵng 8km. Đây là điểm đến được du khách yêu mến trên hành trình tham quan các vùng đất thuộc con đường di sản Miền Trung như: Cố Đô Huế – Ngũ Hành Sơn – Phố cổ Hội An - Khu di tích đền tháp Mỹ Sơn.', 'hinh_anh' => 'https://statics.vinpearl.com/ngu-hanh-son-01_1629767291.jpg', 'tinh_trang' => '1'],
-            ['id_chuyen_muc' => 3, 'ten_bai_viet' => 'Combo 3N2Đ tàu Phú Quốc Express & VinHolidays Fiesta hoặc TK Phú Quốc Hotel', 'mo_ta_ngan' => 'Khởi động một mùa hè diệu kỳ, Vinpearl kết hợp với hãng tàu 5 sao Phú Quốc Express giới thiệu combo khám phá đảo ngọc thiên đường với hành trình ấn tượng bằng tàu cao tốc Phú Quốc Express ', 'mo_ta_chi_tiet' => 'Hãng tàu với công nghệ hiện đại, tiên tiến nhất của thế giới hiện nay: Tàu cao tốc hai thân vận chuyển hành khách đường biển, với chất lượng kỹ thuật và độ an toàn Châu Âu, sử dụng thiết bị động lực của Rolls Royce, dịch vụ cao cấp chuẩn 5 sao. Tốc độ tối ưu lên tới 30 hải lý/giờ, mang bạn đến đảo với thời gian tiết kiệm nhất.  Tàu gồm 2 khoang: khoang phổ thông và khoang VIP. Khoang VIP có thiết kế ghế bọc da thật, có khả năng ngả 130 độ và màn hình giải trí, hệ thống âm thanh và tai nghe không dây rất tiện nghi và sang trọng phục vụ khách, trong khi đó khoang phổ thông cũng được thiết kế rất sang trọng với vách khoang ốp da, sàn tàu thiết kế chống ồn và say sóng. Trên tàu còn có hệ thống camera hành trình, ghi lại thông tin hành trình của tàu. Boong tàu được thiết kế với sức chứa lên tới 50 người. Với những ai thích không gian mở, không thích ngồi trong khoang tàu, có thể lên boong tàu để ngắm cảnh và chụp hình.', 'hinh_anh' => 'https://booking-static.vinpearl.com/tours/2c563f58e6244070b23cf40ef5f9cc9a_DJI_0527%20(1).jpg', 'tinh_trang' => '1'],
-            ['id_chuyen_muc' => 3, 'ten_bai_viet' => 'Trọn bộ kinh nghiệm, điểm đến & combo du lịch Phú Quốc từ A - Z 2024', 'mo_ta_ngan' => 'Du lịch Phú Quốc với trọn bộ cẩm nang về thời điểm, khí hậu, phương tiện đi lại, kế hoạch ăn - chơi - ngủ - nghỉ từ A - Z sau đây sẽ giúp mọi du khách tận hưởng kỳ nghỉ của mình trọn vẹn nhất!', 'mo_ta_chi_tiet' => 'Thuộc địa phận tỉnh Kiên Giang, nằm trong vịnh Thái Lan, đảo Phú Quốc từ lâu đã nổi tiếng với du khách từ mọi miền đất nước và cả khách du lịch quốc tế. Không chỉ là hòn đảo xinh đẹp với phong cảnh thiên nhiên yên bình, hoang sơ, khí hậu thuận lợi cho hoạt động vui chơi, nghỉ dưỡng, Phú Quốc còn là điểm đến lý tưởng cho nhiều hoạt động khám phá thiên nhiên kỳ thú.', 'hinh_anh' => 'https://statics.vinpearl.com/du-lich-phu-quoc-hoang-hon_1649836308.jpg', 'tinh_trang' => '1'],
-            ['id_chuyen_muc' => 3, 'ten_bai_viet' => 'Lịch trình du lịch Phú Quốc 3 ngày cho nhóm bạn vui hết cỡ', 'mo_ta_ngan' => 'Lịch trình du lịch Phú Quốc 3 ngày đầy đủ và chi tiết dưới đây sẽ giúp các hội bạn thân khám phá trọn vẹn những bãi biển thơ mộng, những khu vui chơi, giải trí hấp dẫn nhất Phú Quốc.', 'mo_ta_chi_tiet' => 'Phú Quốc đẹp nhất từ tháng 10 đến tháng 4 hàng năm, khi thời tiết ít mưa, thuận lợi cho các hoạt động du lịch. Sau đây là những gợi ý lịch trình du lịch Phú Quốc 3 ngày từ độc giả Marine Poy cùng nhóm bạn 7 người trong 3 ngày. Mỗi lần đến với Phú Quốc, du khách nên dành ít nhất 3-4 ngày để trải nghiệm được hết các địa điểm du lịch hấp dẫn. Một lịch trình 3 ngày tại Phú Quốc có thể đảm bảo tiết kiệm thời gian và chi phí đi lại sẽ có mức giá khoảng 5 triệu đồng/người.', 'hinh_anh' => 'https://statics.vinpearl.com/Hinh-anh-lich-trinh-du-lich-phu-quoc-cho-nhom-ban-3-ngay-1.jpg', 'tinh_trang' => '1'],
+            // === KHUYẾN MÃI & KINH NGHIỆM (id_chuyen_muc = 3) ===
+            [
+                'id_chuyen_muc' => 3,
+                'ten_bai_viet' => 'Combo “Bay & Ngủ” Vinpearl Nha Trang – Chỉ từ 1.299.000đ',
+                'mo_ta_ngan' => 'Vé máy bay khứ hồi + 2 đêm Vinpearl + buffet sáng + vé VinWonders – gói ưu đãi có 1-0-2 cho kỳ nghỉ hè!',
+                'mo_ta_chi_tiet' => '<p>Đặt trước 30 ngày, nhận ngay combo trọn gói. Bay Vietnam Airlines, nghỉ tại Vinpearl Resort & Spa, vui chơi không giới hạn tại VinWonders, ăn buffet 50 món.</p><p>Áp dụng đến 30/09/2024. Số lượng có hạn!</p>',
+                'hinh_anh' => 'https://images.pexels.com/photos/258154/pexels-photo-258154.jpeg?w=1600',
+                'tinh_trang' => 1,
+                'created_at' => $now->copy()->subHours(2),
+                'updated_at' => $now,
+            ],
+            [
+                'id_chuyen_muc' => 3,
+                'ten_bai_viet' => 'Check-in Grand World Phú Quốc – “Thành phố không ngủ” phiên bản Việt',
+                'mo_ta_ngan' => 'Kênh đào Venice, gấu trúc khổng lồ, show thực cảnh Tinh Hoa Việt Nam – tất cả trong 1 đêm tại Grand World!',
+                'mo_ta_chi_tiet' => '<p>Grand World mở cửa 24/7 với hàng trăm hoạt động: đi thuyền gondola, xem show nước, ăn uống đường phố, chụp ảnh sống ảo. Đặc biệt, show <strong>Tinh Hoa Việt Nam</strong> sử dụng công nghệ mapping 3D sống động nhất Đông Nam Á.</p>',
+                'hinh_anh' => 'https://images.pexels.com/photos/460672/pexels-photo-460672.jpeg?w=1600',
+                'tinh_trang' => 1,
+                'created_at' => $now->copy()->subDays(5),
+                'updated_at' => $now,
+            ],
+            [
+                'id_chuyen_muc' => 3,
+                'ten_bai_viet' => 'Kinh nghiệm săn vé 0đ – Bí kíp từ A-Z',
+                'mo_ta_ngan' => 'Làm sao để đặt được vé máy bay 0đ? Cài app nào? Canh khung giờ nào? Tất cả được bật mí trong 5 phút đọc!',
+                'mo_ta_chi_tiet' => '<p><strong>Bước 1:</strong> Cài app Vietjet, Bamboo, cài thông báo. <strong>Bước 2:</strong> Canh giờ vàng: 0h, 12h, 22h. <strong>Bước 3:</strong> Chuẩn bị sẵn thông tin hành khách. <strong>Bước 4:</strong> Thanh toán ngay khi thấy giá 0đ (chưa tính thuế).</p><p>Thành công 90% nếu làm đúng!</p>',
+                'hinh_anh' => 'https://images.pexels.com/photos/450063/pexels-photo-450063.jpeg?w=1600',
+                'tinh_trang' => 1,
+                'created_at' => $now->copy()->subDays(6),
+                'updated_at' => $now,
+            ],
         ]);
     }
 }
