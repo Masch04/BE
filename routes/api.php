@@ -169,3 +169,7 @@ Route::get('khach-hang/dang-xuat-all', [KhachhangController::class, 'dangXuatAll
 
 Route::get('admin/dang-xuat', [NhanVienController::class, 'dangXuat']);
 Route::get('admin/dang-xuat-all', [NhanVienController::class, 'dangXuatAll']);
+
+// === KHÁCH VÃNG LAI - ĐẶT PHÒNG KHÔNG CẦN LOGIN ===
+Route::get('/client/loai-phong/public', [LoaiPhongController::class, 'getdataClient']); // Dùng cái có sẵn
+Route::post('/khach-vang-lai/dat-phong', [HoaDonController::class, 'datPhongKhachVangLai']);
