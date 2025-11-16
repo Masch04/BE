@@ -14,7 +14,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
-use Illuminate\Support\Facades\Log;
+
 class HoaDonController extends Controller
 {
     public function timKiem(Request $request)
@@ -386,87 +386,4 @@ class HoaDonController extends Controller
             'list_so_luong'  => $list_so_luong,
         ]);
     }
-      // === ĐẶT PHÒNG CHO KHÁCH VÃNG LAI (KHÔNG CẦN LOGIN) ===
-      public function datPhongKhachVangLai(Request $request)
-      {
-          $validated = $request->validate([
-              'ho_ten'        => 'required|string|max:255',
-              'sdt'           => 'required|string|max:20',
-              'email'         => 'required|email',
-              'ngay_den'      => 'required|date',
-              'ngay_di'       => 'required|date|after:ngay_den',
-              'loai_phong_id' => 'required|exists:loai_phongs,id',
-              'ghi_chu'       => 'nullable|string',
-          ]);
-
-          $ngayDen = Carbon::parse($validated['ngay_den']);
-          $ngayDi  = Carbon::parse($validated['ngay_di']);
-          $soDem   = $ngayDi->diffInDays($ngayDen);
-
-          // Lấy giá phòng từ bảng loai_phongs
-          $loaiPhong = LoaiPhong::findOrFail($validated['loai_phong_id']);
-          $donGia = $loaiPhong->gia_phong ?? 0;
-          $tongTien = $donGia * $soDem;
-
-          // Tạo mã hóa đơn
-          $maHoaDon = 'KL' . strtoupper(Str::random(6));
-
-          // Tạo hóa đơn (khách vãng lai)
-          $hoaDon = HoaDon::create([
-              'ma_hoa_don'    => $maHoaDon,
-              'id_khach_hang' => null,
-              'ho_ten'        => $validated['ho_ten'],
-              'sdt'           => $validated['sdt'],
-              'email'         => $validated['email'],
-              'ngay_den'      => $ngayDen,
-              'ngay_di'       => $ngayDi,
-              'tong_tien'     => $tongTien,
-              'trang_thai'    => 'cho_xac_nhan',
-              'nguon'         => 'khach_vang_lai',
-              'ghi_chu'       => $validated['ghi_chu'] ?? null,
-          ]);
-
-          // Tạo chi tiết thuê phòng (1 phòng)
-          ChiTietThuePhong::create([
-              'id_hoa_don'    => $hoaDon->id,
-              'id_loai_phong' => $validated['loai_phong_id'],
-              'so_luong'      => 1,
-              'don_gia'       => $donGia,
-              'ngay_thue'     => $ngayDen,
-              'tinh_trang'    => 2, // Đã đặt
-              'gia_thue'      => $donGia,
-          ]);
-
-          // Gửi email xác nhận
-          $dataMail = [
-              'ho_va_ten'     => $validated['ho_ten'],
-              'ma_hoa_don'    => $maHoaDon,
-              'ten_phong'     => $loaiPhong->ten_loai_phong,
-              'ngay_den'      => $ngayDen->format('d/m/Y'),
-              'ngay_di'       => $ngayDi->format('d/m/Y'),
-              'tong_tien'     => number_format($tongTien, 0, ',', '.'),
-              'ghi_chu'       => $validated['ghi_chu'] ?? '',
-          ];
-
-          try {
-              Mail::to($validated['email'])->send(new SendMail(
-                  'Xác Nhận Đơn Đặt Phòng - Khách Vãng Lai',
-                  'xac_nhan_don_hang_khach_le',
-                  $dataMail
-              ));
-              Mail::to('admin@hotel.com')->send(new SendMail(
-                  'Đơn Đặt Phòng Mới Từ Khách Vãng Lai',
-                  'admin_thong_bao_don_moi',
-                  array_merge($dataMail, ['email_khach' => $validated['email'], 'sdt' => $validated['sdt']])
-              ));
-          } catch (\Exception $e) {
-              Log::error('Lỗi gửi mail: ' . $e->getMessage());
-          }
-
-          return response()->json([
-              'status'        => true,
-              'message'       => 'Đặt phòng thành công! Vui lòng kiểm tra email.',
-              'ma_hoa_don'    => $maHoaDon
-          ]);
-      }
 }

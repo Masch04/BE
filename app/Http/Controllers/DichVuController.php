@@ -161,4 +161,15 @@ class DichVuController extends Controller
             ]);
         }
     }
+    public function getDichVuForCustomer()
+{
+    $data = DichVu::where('tinh_trang', 1) // chỉ lấy dịch vụ đang hoạt động
+                  ->select('id', 'ten_dich_vu', 'don_gia', 'don_vi_tinh', 'ghi_chu', 'tinh_trang')
+                  ->get();
+
+    return response()->json([
+        'status' => true,
+        'dich_vu' => $data
+    ]);
+}
 }

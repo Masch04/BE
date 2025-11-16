@@ -70,10 +70,10 @@ class BaiVietSeeder extends Seeder
             ],
             [
                 'id_chuyen_muc' => 2,
-                'ten_bai_viet' => 'Làng chài Nhơn Hải – Nơi bình yên còn sót lại',
+                'ten_bai_viet' => '– Nơi bình yên còn sót lại',
                 'mo_ta_ngan' => 'Xa trung tâm Quy Nhơn 20km, làng chài Nhơn Hải vẫn giữ nguyên vẻ hoang sơ: thuyền thúng, lưới cá, tiếng sóng vỗ và những bữa cơm hải sản 50k.',
                 'mo_ta_chi_tiet' => '<p>Mỗi sáng, ngư dân gánh cá tươi lên chợ. Du khách có thể mua mực một nắng, cá nục hấp, ghẹ luộc ngay tại bãi biển. Buổi chiều, ngắm hoàng hôn từ đồi cát – không gian yên bình hiếm có.</p>',
-                'hinh_anh' => 'https://images.pexels.com/photos/1458699/pexels-photo-1458699.jpeg?w=1600',
+                'hinh_anh' => 'https://mia.vn/media/uploads/blog-du-lich/lang-chai-nhon-hai-ve-dep-binh-di-noi-ngoai-o-thanh-pho-1-1679650508.jpg',
                 'tinh_trang' => 1,
                 'created_at' => $now->copy()->subDays(4),
                 'updated_at' => $now,
