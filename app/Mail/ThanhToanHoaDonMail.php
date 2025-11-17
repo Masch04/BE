@@ -56,8 +56,8 @@ class GiaoDichController extends Controller
                     if (!$hoaDon) continue;
 
                     // KIỂM TRA SỐ TIỀN ĐỦ → TÍNH CẢ DỊCH VỤ
-                    $dsDichVu = ChiTietDichVu::where('id_hoa_don', $hoaDon->id)->get();
-                    $tong_tien_dich_vu = $dsDichVu->sum(fn($dv) => $dv->don_gia * $dv->so_luong);
+                    $ds_dich_vu = ChiTietDichVu::where('id_hoa_don', $hoaDon->id)->get();
+                    $tong_tien_dich_vu = $ds_dich_vu->sum(fn($dv) => $dv->don_gia * $dv->so_luong);
                     $tong_tien_thuc_te = $hoaDon->tong_tien + $tong_tien_dich_vu;
 
                     if ($value['creditAmount'] >= $tong_tien_thuc_te) {
@@ -91,7 +91,7 @@ class GiaoDichController extends Controller
                             'email'          => $hoaDon->email,
                         ];
 
-                        Mail::to($bien_1['email'])->send(new ThanhToanHoaDonMail($bien_1, $data, $dsDichVu));
+                        Mail::to($bien_1['email'])->send(new ThanhToanHoaDonMail($bien_1, $data, $ds_dich_vu));
 
                         Log::info("ĐÃ GỬI EMAIL CHO HÓA ĐƠN ID: $id_hoa_don - TỔNG: $tong_tien_thuc_te");
                     }
