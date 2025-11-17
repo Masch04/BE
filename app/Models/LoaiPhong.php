@@ -21,4 +21,8 @@ class LoaiPhong extends Model
         'tien_ich',
         'tinh_trang'
     ];
+    public function phongs()
+    {
+        return $this->hasMany(Phong::class, 'id_loai_phong');
+    }
 }

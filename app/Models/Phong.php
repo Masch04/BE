@@ -18,4 +18,14 @@ class Phong extends Model
         'id_loai_phong',
         'tien_ich_khac',
     ];
+    public function loaiPhong()
+    {
+        return $this->belongsTo(LoaiPhong::class, 'id_loai_phong');
+    }
+    // THAY ĐỔI: Một Phòng có thể xuất hiện trong nhiều Chi Tiết Thuê Phòng
+    public function chiTietThuePhongs()
+    {
+        return $this->hasMany(ChiTietThuePhong::class, 'id_phong');
+    }
 }
+

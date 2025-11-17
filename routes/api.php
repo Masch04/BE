@@ -5,6 +5,7 @@ use App\Http\Controllers\ChiTietPhanQuyenController;
 use App\Http\Controllers\ChiTietThuePhongController;
 use App\Http\Controllers\ChucNangController;
 use App\Http\Controllers\ChuyenMucController;
+use App\Http\Controllers\DialogflowWebhookController;
 use App\Http\Controllers\DichVuController;
 use App\Http\Controllers\GiaoDichController;
 use App\Http\Controllers\HoaDonController;
@@ -15,11 +16,15 @@ use App\Http\Controllers\PhanQuyenController;
 use App\Http\Controllers\PhongController;
 use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\SlideController;
+use App\Http\Controllers\QuickBookingController;
 use App\Http\Middleware\kiemTraAdminMiddleware;
 use App\Models\ChiTietPhanQuyen;
 use App\Models\ChiTietThuePhong;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+
+// Route để Dialogflow gọi đến. Sử dụng middleware xác thực nếu bạn thêm header.
+Route::post('/dialogflow/webhook', [DialogflowWebhookController::class, 'handle'])->name('dialogflow.webhook');
 
 Route::get("/giao-dich", [GiaoDichController::class, 'index']);
 Route::get('/dich-vu', [DichVuController::class, 'getDichVuForCustomer']);
@@ -170,7 +175,3 @@ Route::get('khach-hang/dang-xuat-all', [KhachhangController::class, 'dangXuatAll
 
 Route::get('admin/dang-xuat', [NhanVienController::class, 'dangXuat']);
 Route::get('admin/dang-xuat-all', [NhanVienController::class, 'dangXuatAll']);
-
-// === KHÁCH VÃNG LAI - ĐẶT PHÒNG KHÔNG CẦN LOGIN ===
-Route::get('/client/loai-phong/public', [LoaiPhongController::class, 'getdataClient']); // Dùng cái có sẵn
-Route::post('/khach-vang-lai/dat-phong', [HoaDonController::class, 'datPhongKhachVangLai']);
