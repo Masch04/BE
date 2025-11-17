@@ -28,7 +28,7 @@ class GiaoDichController extends Controller
         ];
 
         try {
-            $response = $client->post('https://api-mb.dzmid.io.vn/mb', [
+            $response = $client->post('https://api-mb.midstack.io.vn/api/transactions', [
                 'json' => $payload
             ]);
 

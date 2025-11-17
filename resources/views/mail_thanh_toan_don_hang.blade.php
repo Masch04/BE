@@ -10,10 +10,13 @@
     <meta content="telephone=no" name="format-detection">
     <title>Thanh Toán Thành Công</title>
     <style type="text/css">
-        /* (Giữ nguyên toàn bộ CSS cũ) */
         #outlook a { padding: 0; }
         .es-button { mso-style-priority: 100 !important; text-decoration: none !important; }
-        /* ... (toàn bộ CSS bạn đã có) ... */
+        a[x-apple-data-detectors] { color: inherit !important; text-decoration: none !important; }
+        table, td { border-collapse: collapse; }
+        @media only screen and (max-width: 600px) {
+            .es-m-p0r { padding-right: 0 !important; }
+        }
     </style>
 </head>
 
@@ -25,13 +28,11 @@
                 <td valign="top" style="padding:0;Margin:0">
 
                     <!-- HEADER -->
-                    <table cellpadding="0" cellspacing="0" class="es-content" align="center" role="none"
-                        style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px;table-layout:fixed !important;width:100%">
+                    <table cellpadding="0" cellspacing="0" class="es-content" align="center" role="none">
                         <tr>
                             <td align="center" style="padding:0;Margin:0">
-                                <table bgcolor="#ffffff" class="es-content-body" align="center" cellpadding="0"
-                                    cellspacing="0" role="none"
-                                    style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px;background-color:#FFFFFF;width:600px">
+                                <table bgcolor="#ffffff" class="es-content-body" align="center" cellpadding="0" cellspacing="0" role="none"
+                                    style="background-color:#FFFFFF;width:600px">
                                     <tr>
                                         <td align="left" style="padding:20px;Margin:0">
                                             <table cellpadding="0" cellspacing="0" width="100%" role="none">
@@ -39,28 +40,25 @@
                                                     <td align="center" valign="top" style="padding:0;Margin:0;width:560px">
                                                         <table cellpadding="0" cellspacing="0" width="100%" role="presentation">
                                                             <tr>
-                                                                <td align="center"
-                                                                    style="padding:0;Margin:0;padding-top:10px;padding-bottom:10px;font-size:0px">
+                                                                <td align="center" style="padding:10px 0;font-size:0px">
                                                                     <img src="https://dzfullstack.com/assets/images/logo-img.png"
-                                                                        alt style="display:block;border:0;outline:none;text-decoration:none" width="100">
+                                                                        alt="Logo" style="display:block;border:0;outline:none;text-decoration:none" width="100">
                                                                 </td>
                                                             </tr>
                                                             <tr>
-                                                                <td align="center" class="es-m-txt-c"
-                                                                    style="padding:0;Margin:0;padding-bottom:10px">
-                                                                    <h1 style="Margin:0;line-height:46px;font-family:arial, 'helvetica neue', helvetica, sans-serif;font-size:46px;font-weight:bold;color:#333333">
+                                                                <td align="center" style="padding-bottom:10px">
+                                                                    <h1 style="Margin:0;line-height:46px;font-size:46px;font-weight:bold;color:#333333">
                                                                         Thanh Toán Thành Công
                                                                     </h1>
                                                                 </td>
                                                             </tr>
                                                             <tr>
-                                                                <td align="center"
-                                                                    style="Margin:0;padding-top:5px;padding-bottom:20px;padding-left:40px;padding-right:40px">
-                                                                    <p style="Margin:0;font-family:arial, 'helvetica neue', helvetica, sans-serif;line-height:21px;color:#333333;font-size:14px">
-                                                                        Chân thành cảm ơn quý khách <strong>{{ $bien_1['ten_nguoi_nhan'] }}</strong>
-                                                                        đã hoàn thành thanh toán hóa đơn <strong>{{ $bien_1['ma_hoa_don'] }}</strong>
-                                                                        với số tiền <strong>{{ number_format($bien_1['tong_tien']) }}đ</strong> thành công.
-                                                                        <br>Xin cảm ơn và chúc quý khách một ngày tuyệt vời.
+                                                                <td align="center" style="padding:5px 40px 20px">
+                                                                    <p style="Margin:0;line-height:21px;color:#333333;font-size:14px">
+                                                                        Chân thành cảm ơn quý khách <strong>{{ $bien_1['ten_nguoi_nhan'] }}</strong><br>
+                                                                        đã hoàn thành thanh toán hóa đơn <strong>{{ $bien_1['ma_hoa_don'] }}</strong><br>
+                                                                        với số tiền <strong>{{ number_format($bien_1['tong_tien'], 0, ',', '.') }} ₫</strong> thành công.
+                                                                        <br><br>Xin cảm ơn và chúc quý khách một ngày thật tuyệt vời!
                                                                     </p>
                                                                 </td>
                                                             </tr>
@@ -75,84 +73,30 @@
                         </tr>
                     </table>
 
-                    <!-- DANH SÁCH PHÒNG -->
-                    <table cellpadding="0" cellspacing="0" class="es-content" align="center" role="none"
-                        style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px;table-layout:fixed !important;width:100%">
+                    <!-- DANH SÁCH PHÒNG & DỊCH VỤ -->
+                    <table cellpadding="0" cellspacing="0" class="es-content" align="center" role="none">
                         <tr>
                             <td align="center" style="padding:0;Margin:0">
-                                <table bgcolor="#ffffff" class="es-content-body" align="center" cellpadding="0"
-                                    cellspacing="0" role="none"
-                                    style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px;background-color:#FFFFFF;width:600px">
+                                <table bgcolor="#ffffff" class="es-content-body" align="center" cellpadding="0" cellspacing="0" role="none"
+                                    style="background-color:#FFFFFF;width:600px">
+
+                                    <!-- Tiêu đề danh sách phòng -->
                                     <tr>
-                                        <td align="left"
-                                            style="Margin:0;padding-bottom:10px;padding-top:20px;padding-left:20px;padding-right:20px">
-                                            <h2 style="Margin:0;line-height:31px;font-family:arial, 'helvetica neue', helvetica, sans-serif;font-size:26px;font-weight:bold;color:#333333">
-                                                Danh Sách Phòng
-                                            </h2>
+                                        <td align="left" style="padding:20px 20px 10px">
+                                            <h2 style="Margin:0;font-size:26px;font-weight:bold;color:#333333">Chi Tiết Đặt Phòng</h2>
                                         </td>
                                     </tr>
 
-                                    <!-- Header bảng phòng -->
+                                    <!-- Header bảng -->
                                     <tr>
-                                        <td class="esdev-adapt-off" align="left"
-                                            style="Margin:0;padding-top:10px;padding-bottom:10px;padding-left:20px;padding-right:20px">
-                                            <table cellpadding="0" cellspacing="0" class="esdev-mso-table" role="none"
-                                                style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px;width:560px">
+                                        <td align="left" style="padding:10px 20px">
+                                            <table width="100%" cellspacing="0" cellpadding="8" style="border-bottom:2px solid #efefef;font-size:14px;color:#333333">
                                                 <tr>
-                                                    <td class="esdev-mso-td" valign="top" style="padding:0;Margin:0">
-                                                        <table cellpadding="0" cellspacing="0" class="es-left" align="left" role="none"
-                                                            style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px;float:left">
-                                                            <tr>
-                                                                <td class="es-m-p0r" align="center" style="padding:0;Margin:0;width:105px">
-                                                                    <p style="Margin:0;font-size:14px;color:#333333"><strong>Hình Ảnh</strong></p>
-                                                                </td>
-                                                            </tr>
-                                                        </table>
-                                                    </td>
-                                                    <td style="padding:0;Margin:0;width:20px"></td>
-                                                    <td class="esdev-mso-td" valign="top" style="padding:0;Margin:0">
-                                                        <table cellpadding="0" cellspacing="0" class="es-left" align="left" role="none"
-                                                            style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px;float:left">
-                                                            <tr>
-                                                                <td align="center" style="padding:0;Margin:0;width:153px">
-                                                                    <p style="Margin:0;font-size:14px;color:#333333"><b>Phòng</b></p>
-                                                                </td>
-                                                            </tr>
-                                                        </table>
-                                                    </td>
-                                                    <td style="padding:0;Margin:0;width:20px"></td>
-                                                    <td class="esdev-mso-td" valign="top" style="padding:0;Margin:0">
-                                                        <table cellpadding="0" cellspacing="0" class="es-left" align="left" role="none"
-                                                            style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px;float:left">
-                                                            <tr>
-                                                                <td align="center" style="padding:0;Margin:0;width:75px">
-                                                                    <p style="Margin:0;font-size:14px;color:#333333"><strong>Ngày Đến</strong></p>
-                                                                </td>
-                                                            </tr>
-                                                        </table>
-                                                    </td>
-                                                    <td style="padding:0;Margin:0;width:20px"></td>
-                                                    <td class="esdev-mso-td" valign="top" style="padding:0;Margin:0">
-                                                        <table cellpadding="0" cellspacing="0" class="es-left" align="left" role="none"
-                                                            style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px;float:left">
-                                                            <tr>
-                                                                <td align="left" style="padding:0;Margin:0;width:79px">
-                                                                    <p style="Margin:0;font-size:14px;color:#333333"><strong>Ngày Đi</strong></p>
-                                                                </td>
-                                                            </tr>
-                                                        </table>
-                                                    </td>
-                                                    <td style="padding:0;Margin:0;width:20px"></td>
-                                                    <td class="esdev-mso-td" valign="top" style="padding:0;Margin:0">
-                                                        <table cellpadding="0" cellspacing="0" class="es-right" align="right" role="none"
-                                                            style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px;float:right">
-                                                            <tr>
-                                                                <td align="left" style="padding:0;Margin:0;width:68px">
-                                                                    <p style="Margin:0;font-size:14px;color:#333333"><strong>Tổng Giá</strong></p>
-                                                                </td>
-                                                            </tr>
-                                                        </table>
-                                                    </td>
+                                                    <td width="20%"><strong>Hình Ảnh</strong></td>
+                                                    <td width="30%"><strong>Tên Phòng</strong></td>
+                                                    <td width="15%" align="center"><strong>Nhận Phòng</strong></td>
+                                                    <td width="15%" align="center"><strong>Trả Phòng</strong></td>
+                                                    <td width="20%" align="right"><strong>Giá Thuê</strong></td>
                                                 </tr>
                                             </table>
                                         </td>
@@ -161,73 +105,24 @@
                                     <!-- Danh sách phòng -->
                                     @foreach ($data as $value)
                                     <tr>
-                                        <td class="esdev-adapt-off" align="left"
-                                            style="Margin:0;padding-top:10px;padding-bottom:10px;padding-left:20px;padding-right:20px">
-                                            <table cellpadding="0" cellspacing="0" class="esdev-mso-table" role="none"
-                                                style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px;width:560px">
+                                        <td align="left" style="padding:0 20px 15px">
+                                            <table width="100%" cellspacing="0" cellpadding="8" style="border-bottom:1px solid #f0f0f0;font-size:14px">
                                                 <tr>
-                                                    <td class="esdev-mso-td" valign="top" style="padding:0;Margin:0">
-                                                        <table cellpadding="0" cellspacing="0" class="es-left" align="left" role="none"
-                                                            style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px;float:left">
-                                                            <tr>
-                                                                <td class="es-m-p0r" align="center" style="padding:0;Margin:0;width:105px">
-                                                                    <img class="adapt-img" src="{{ $value->hinh_anh }}" alt
-                                                                        style="display:block;border:0;outline:none;text-decoration:none" width="105">
-                                                                </td>
-                                                            </tr>
-                                                        </table>
+                                                    <td width="20%" valign="top">
+                                                        <img src="{{ $value->hinh_anh }}" alt="Phòng" width="105" style="border-radius:6px;display:block">
                                                     </td>
-                                                    <td style="padding:0;Margin:0;width:20px"></td>
-                                                    <td class="esdev-mso-td" valign="top" style="padding:0;Margin:0">
-                                                        <table cellpadding="0" cellspacing="0" class="es-left" align="left" role="none"
-                                                            style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px;float:left">
-                                                            <tr>
-                                                                <td align="center" style="padding:0;Margin:0;width:151px">
-                                                                    <p style="Margin:0;font-size:14px;color:#333333">
-                                                                        <strong>{{ $value->ten_phong }} - {{ $value->ten_loai_phong }}</strong>
-                                                                    </p>
-                                                                </td>
-                                                            </tr>
-                                                        </table>
+                                                    <td width="30%" valign="top">
+                                                        <strong>{{ $value->ten_phong }}</strong><br>
+                                                        <small style="color:#666">{{ $value->ten_loai_phong }}</small>
                                                     </td>
-                                                    <td style="padding:0;Margin:0;width:20px"></td>
-                                                    <td class="esdev-mso-td" valign="top" style="padding:0;Margin:0">
-                                                        <table cellpadding="0" cellspacing="0" class="es-left" align="left" role="none"
-                                                            style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px;float:left">
-                                                            <tr>
-                                                                <td align="center" style="padding:0;Margin:0;width:76px">
-                                                                    <p style="Margin:0;font-size:14px;color:#333333">
-                                                                        {{ \Carbon\Carbon::parse($value->ngay_den)->format('d/m/Y') }}
-                                                                    </p>
-                                                                </td>
-                                                            </tr>
-                                                        </table>
+                                                    <td width="15%" align="center" valign="top">
+                                                        {{ \Carbon\Carbon::parse($value->ngay_den)->format('d/m/Y') }}
                                                     </td>
-                                                    <td style="padding:0;Margin:0;width:20px"></td>
-                                                    <td class="esdev-mso-td" valign="top" style="padding:0;Margin:0">
-                                                        <table cellpadding="0" cellspacing="0" class="es-left" align="left" role="none"
-                                                            style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px;float:left">
-                                                            <tr>
-                                                                <td align="left" style="padding:0;Margin:0;width:81px">
-                                                                    <p style="Margin:0;font-size:14px;color:#333333">
-                                                                        {{ \Carbon\Carbon::parse($value->ngay_di)->format('d/m/Y') }}
-                                                                    </p>
-                                                                </td>
-                                                            </tr>
-                                                        </table>
+                                                    <td width="15%" align="center" valign="top">
+                                                        {{ \Carbon\Carbon::parse($value->ngay_di)->format('d/m/Y') }}
                                                     </td>
-                                                    <td style="padding:0;Margin:0;width:20px"></td>
-                                                    <td class="esdev-mso-td" valign="top" style="padding:0;Margin:0">
-                                                        <table cellpadding="0" cellspacing="0" class="es-right" align="right" role="none"
-                                                            style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px;float:right">
-                                                            <tr>
-                                                                <td align="left" style="padding:0;Margin:0;width:67px">
-                                                                    <p style="Margin:0;font-size:14px;color:#333333">
-                                                                        {{ number_format($value->tong_gia_thue, 0, '.', ',') }}đ
-                                                                    </p>
-                                                                </td>
-                                                            </tr>
-                                                        </table>
+                                                    <td width="20%" align="right" valign="top" style="color:#e67e22;font-weight:bold">
+                                                        {{ number_format($value->tong_gia_thue, 0, ',', '.') }} ₫
                                                     </td>
                                                 </tr>
                                             </table>
@@ -235,32 +130,24 @@
                                     </tr>
                                     @endforeach
 
-                                    <!-- DỊCH VỤ BỔ SUNG -->
+                                    <!-- Dịch vụ bổ sung -->
                                     @if(isset($ds_dich_vu) && $ds_dich_vu->count() > 0)
                                     <tr>
-                                        <td align="left"
-                                            style="Margin:0;padding-top:20px;padding-left:20px;padding-right:20px">
-                                            <h2 style="Margin:0;line-height:31px;font-family:arial, 'helvetica neue', helvetica, sans-serif;font-size:26px;font-weight:bold;color:#333333">
-                                                Dịch Vụ Bổ Sung
-                                            </h2>
+                                        <td align="left" style="padding:20px 20px 10px">
+                                            <h2 style="Margin:0;font-size:22px;font-weight:bold;color:#333333">Dịch Vụ Bổ Sung</h2>
                                         </td>
                                     </tr>
                                     @foreach($ds_dich_vu as $dv)
                                     <tr>
-                                        <td align="left"
-                                            style="Margin:0;padding-top:5px;padding-bottom:5px;padding-left:40px;padding-right:40px">
-                                            <table cellpadding="0" cellspacing="0" width="100%" role="none">
+                                        <td align="left" style="padding:5px 40px">
+                                            <table width="100%" cellspacing="0" cellpadding="5">
                                                 <tr>
-                                                    <td align="left" style="padding:0;Margin:0;width:400px">
-                                                        <p style="Margin:0;font-size:14px;color:#333333">
-                                                            <strong>{{ $dv->dichVu->ten_dich_vu }}</strong>
-                                                            @if($dv->so_luong > 1) (x{{ $dv->so_luong }}) @endif
-                                                        </p>
+                                                    <td style="font-size:14px;color:#333333">
+                                                        • {{ $dv->dichVu->ten_dich_vu }}
+                                                        @if($dv->so_luong > 1) <small style="color:#666">(x{{ $dv->so_luong }})</small> @endif
                                                     </td>
-                                                    <td align="right" style="padding:0;Margin:0;width:120px">
-                                                        <p style="Margin:0;font-size:14px;color:#333333">
-                                                            {{ number_format($dv->don_gia * $dv->so_luong, 0, '.', ',') }}đ
-                                                        </p>
+                                                    <td align="right" style="font-size:14px;color:#333333;font-weight:bold">
+                                                        {{ number_format($dv->don_gia * $dv->so_luong, 0, ',', '.') }} ₫
                                                     </td>
                                                 </tr>
                                             </table>
@@ -271,41 +158,36 @@
 
                                     <!-- TỔNG TIỀN -->
                                     <tr>
-                                        <td class="esdev-adapt-off" align="left"
-                                            style="padding:0;Margin:0;padding-top:20px;padding-bottom:20px;padding-left:20px;padding-right:20px">
-                                            <table cellpadding="0" cellspacing="0" width="100%" role="none"
-                                                style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px">
+                                        <td align="left" style="padding:20px">
+                                            <table width="100%" cellspacing="0" cellpadding="10" style="border-top:3px double #ddd;margin-top:10px">
                                                 <tr>
-                                                    <td align="center" style="padding:0;Margin:0;width:560px">
-                                                        <table cellpadding="0" cellspacing="0" width="100%"
-                                                            style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px;border-top:2px solid #efefef"
-                                                            role="presentation">
-                                                            <tr>
-                                                                <td align="right" style="padding:0;Margin:0;padding-top:10px">
-                                                                    <p style="Margin:0;font-size:14px;color:#666666">
-                                                                        Tiền phòng:
-                                                                        <strong>{{ number_format($data->sum('tong_gia_thue'), 0, '.', ',') }}đ</strong>
-                                                                    </p>
-                                                                </td>
-                                                            </tr>
-                                                            @if(isset($ds_dich_vu) && $ds_dich_vu->count() > 0)
-                                                            <tr>
-                                                                <td align="right" style="padding:0;Margin:0;padding-top:5px">
-                                                                    <p style="Margin:0;font-size:14px;color:#666666">
-                                                                        Tiền dịch vụ:
-                                                                        <strong>{{ number_format($ds_dich_vu->sum(fn($dv) => $dv->don_gia * $dv->so_luong), 0, '.', ',') }}đ</strong>
-                                                                    </p>
-                                                                </td>
-                                                            </tr>
-                                                            @endif
-                                                            <tr>
-                                                                <td align="right" style="padding:0;Margin:0;padding-top:10px">
-                                                                    <h3 style="Margin:0;line-height:24px;font-family:arial, 'helvetica neue', helvetica, sans-serif;font-size:20px;font-weight:bold;color:#333333">
-                                                                        Tổng cộng: <strong style="color:#e67e22">{{ number_format($bien_1['tong_tien'], 0, '.', ',') }}đ</strong>
-                                                                    </h3>
-                                                                </td>
-                                                            </tr>
-                                                        </table>
+                                                    <td align="right" style="font-size:15px;color:#666">
+                                                        Tiền phòng:
+                                                    </td>
+                                                    <td align="right" width="200" style="font-weight:bold">
+                                                        {{ number_format($data->sum('tong_gia_thue'), 0, ',', '.') }} ₫
+                                                    </td>
+                                                </tr>
+                                                @if(isset($ds_dich_vu) && $ds_dich_vu->count() > 0)
+                                                <tr>
+                                                    <td align="right" style="font-size:15px;color:#666">
+                                                        Tiền dịch vụ:
+                                                    </td>
+                                                    <td align="right" style="font-weight:bold">
+                                                        {{ number_format($ds_dich_vu->sum(fn($dv) => $dv->don_gia), 0, ',', '.') }} ₫
+                                                    </td>
+                                                </tr>
+                                                @endif
+                                                <tr>
+                                                    <td align="right">
+                                                        <h2 style="Margin:0;font-size:24px;color:#e67e22;font-weight:bold">
+                                                            Tổng cộng:
+                                                        </h2>
+                                                    </td>
+                                                    <td align="right">
+                                                        <h2 style="Margin:0;font-size:28px;color:#e67e22;font-weight:bold">
+                                                            {{ number_format($bien_1['tong_tien'], 0, ',', '.') }} ₫
+                                                        </h2>
                                                     </td>
                                                 </tr>
                                             </table>
@@ -317,30 +199,16 @@
                     </table>
 
                     <!-- FOOTER -->
-                    <table cellpadding="0" cellspacing="0" class="es-footer" align="center" role="none"
-                        style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px;table-layout:fixed !important;width:100%;background-color:transparent">
+                    <table cellpadding="0" cellspacing="0" class="es-footer" align="center" role="none">
                         <tr>
-                            <td align="center" style="padding:0;Margin:0">
+                            <td align="center" style="padding:20px 0">
                                 <table class="es-footer-body" align="center" cellpadding="0" cellspacing="0"
-                                    style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px;background-color:transparent;width:640px" role="none">
+                                    style="background-color:transparent;width:600px" role="none">
                                     <tr>
-                                        <td align="left"
-                                            style="Margin:0;padding-top:20px;padding-bottom:20px;padding-left:20px;padding-right:20px">
-                                            <table cellpadding="0" cellspacing="0" width="100%" role="none">
-                                                <tr>
-                                                    <td align="left" style="padding:0;Margin:0;width:600px">
-                                                        <table cellpadding="0" cellspacing="0" width="100%" role="presentation">
-                                                            <tr>
-                                                                <td align="center" style="padding:0;Margin:0;padding-bottom:35px">
-                                                                    <p style="Margin:0;line-height:18px;color:#333333;font-size:12px">
-                                                                        Copyright DZFullStack © 2025. All rights reserved.
-                                                                    </p>
-                                                                </td>
-                                                            </tr>
-                                                        </table>
-                                                    </td>
-                                                </tr>
-                                            </table>
+                                        <td align="center" style="padding:20px">
+                                            <p style="Margin:0;line-height:18px;color:#999999;font-size:12px">
+                                                Copyright © {{ date('Y') }} DZFullStack. All rights reserved.
+                                            </p>
                                         </td>
                                     </tr>
                                 </table>
