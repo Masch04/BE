@@ -130,72 +130,85 @@ protected function handleHoiVeCacLoaiPhong()
      * @return string
      */
 protected function handleHoiChiTietLoaiPhong(array $parameters)
-{
-    $tenLoaiPhong = $parameters['ten_loai_phong'] ?? null;
-    if (!$tenLoaiPhong) {
+    {
+        $tenLoaiPhong = $parameters['ten_loai_phong'] ?? null;
+        if (!$tenLoaiPhong) {
+            return [
+                'fulfillmentMessages' => [
+                    ['text' => ['text' => ['Bạn muốn hỏi chi tiết về loại phòng nào? Vui lòng cung cấp tên loại phòng.']]]
+                ]
+            ];
+        }
+
+        $tenLoaiPhongNormalized = $this->normalizeRoomTypeName($tenLoaiPhong);
+        $loaiPhong = LoaiPhong::whereRaw('LOWER(ten_loai_phong) LIKE ?', ['%' . strtolower($tenLoaiPhongNormalized) . '%'])
+                                ->first();
+
+        if (!$loaiPhong) {
+            return [
+                'fulfillmentMessages' => [
+                    ['text' => ['text' => ["Rất tiếc, tôi không tìm thấy thông tin về loại phòng '{$tenLoaiPhong}'."]]]
+                ]
+            ];
+        }
+
+        // ===== XỬ LÝ TIỆN ÍCH =====
+        $tienIch = $loaiPhong->tien_ich;
+        $tienIch = str_replace('</p><p>', '|||', $tienIch);
+        $tienIch = strip_tags($tienIch);
+        $tienIchList = array_filter(array_map('trim', explode('|||', $tienIch)));
+
+        // Tạo array tiện ích
+        $tienIchArray = [];
+        foreach ($tienIchList as $item) {
+            $tienIchArray[] = "✅ {$item}";
+        }
+
+        // Lấy URL hình ảnh trực tiếp từ cột 'hinh_anh'
+        // Không cần dùng asset() vì đây là URL đầy đủ từ Unsplash
+        $imageUrl = $loaiPhong->hinh_anh ?? 'https://via.placeholder.com/400x200?text=No+Image';
+
         return [
-            'fulfillmentMessages' => [
-                ['text' => ['text' => ['Bạn muốn hỏi chi tiết về loại phòng nào? Vui lòng cung cấp tên loại phòng.']]]
-            ]
-        ];
-    }
-
-    $tenLoaiPhongNormalized = $this->normalizeRoomTypeName($tenLoaiPhong);
-    $loaiPhong = LoaiPhong::whereRaw('LOWER(ten_loai_phong) LIKE ?', ['%' . strtolower($tenLoaiPhongNormalized) . '%'])
-                            ->first();
-
-    if (!$loaiPhong) {
-        return [
-            'fulfillmentMessages' => [
-                ['text' => ['text' => ["Rất tiếc, tôi không tìm thấy thông tin về loại phòng '{$tenLoaiPhong}'."]]]
-            ]
-        ];
-    }
-
-    // ===== XỬ LÝ TIỆN ÍCH =====
-    $tienIch = $loaiPhong->tien_ich;
-    $tienIch = str_replace('</p><p>', '|||', $tienIch);
-    $tienIch = strip_tags($tienIch);
-    $tienIchList = array_filter(array_map('trim', explode('|||', $tienIch)));
-
-    // Tạo array tiện ích
-    $tienIchArray = [];
-    foreach ($tienIchList as $item) {
-        $tienIchArray[] = "✅ {$item}";
-    }
-
-    return [
-        'fulfillmentMessages' => [
-            [
-                'payload' => [
-                    'richContent' => [
+    'fulfillmentMessages' => [
+        [
+            'payload' => [
+                'richContent' => [
+                    [
+                        // Card thông tin cơ bản (KHÔNG chứa hình ảnh nữa)
                         [
-                            // Card đẹp với thông tin cơ bản
-                            [
-                                'type' => 'info',
-                                'title' => "{$loaiPhong->ten_loai_phong}",
-                                'subtitle' => "🛏️ {$loaiPhong->so_giuong} giường | 👥 {$loaiPhong->so_nguoi_lon} người lớn" .
-                                             ($loaiPhong->so_tre_em > 0 ? " + {$loaiPhong->so_tre_em} trẻ em" : "") .
-                                             " | 📐 {$loaiPhong->dien_tich}m²"
-                            ],
-                            // Divider để phân cách
-                            [
-                                'type' => 'divider'
-                            ],
-                            // Description với tiện ích xuống dòng
-                            [
-                                'type' => 'description',
-                                'title' => '✨ Tiện ích nổi bật:',
-                                'text' => $tienIchArray
-                            ]
+                            'type' => 'info',
+                            'title' => "{$loaiPhong->ten_loai_phong}",
+                            'subtitle' => "🛏️ {$loaiPhong->so_giuong} giường | 👥 {$loaiPhong->so_nguoi_lon} người lớn" .
+                                         ($loaiPhong->so_tre_em > 0 ? " + {$loaiPhong->so_tre_em} trẻ em" : "") .
+                                         " | 📐 {$loaiPhong->dien_tich}m²"
+                        ],
+
+                        // 👉 HÌNH ẢNH CHUYỂN XUỐNG DƯỚI — nằm ngay trước “Tiện ích nổi bật”
+                        [
+                            'type' => 'image',
+                            'rawUrl' => $imageUrl
+                        ],
+
+                        // Divider
+                        [
+                            'type' => 'divider'
+                        ],
+
+                        // Phần tiện ích
+                        [
+                            'type' => 'description',
+                            'title' => '✨ Tiện ích nổi bật:',
+                            'text' => $tienIchArray
                         ]
                     ]
                 ]
             ]
         ]
-    ];
-}
-    /**
+    ]
+];
+
+    }
+      /**
      * Xử lý intent 'HoiGiaPhongTheoLoai'.
      * Cung cấp giá mặc định của một loại phòng cụ thể.
      *
@@ -203,31 +216,70 @@ protected function handleHoiChiTietLoaiPhong(array $parameters)
      * @return string
      */
 
-protected function handleHoiGiaPhongTheoLoai(array $parameters): string
-    {
-        $tenLoaiPhong = $parameters['ten_loai_phong'] ?? null;
+protected function handleHoiGiaPhongTheoLoai(array $parameters): array // Thay đổi kiểu trả về thành array
+{
+    $tenLoaiPhong = $parameters['ten_loai_phong'] ?? null;
 
-        if (!$tenLoaiPhong) {
-            return 'Bạn muốn hỏi giá của loại phòng nào? Vui lòng cung cấp tên loại phòng.';
-        }
-
-        $tenLoaiPhongNormalized = $this->normalizeRoomTypeName($tenLoaiPhong);
-
-        $loaiPhong = LoaiPhong::whereRaw('LOWER(ten_loai_phong) LIKE ?', ['%' . strtolower($tenLoaiPhongNormalized) . '%'])
-                                ->first();
-
-        if (!$loaiPhong) {
-            return "Rất tiếc, tôi không tìm thấy thông tin về loại phòng '{$tenLoaiPhong}'. Bạn có thể kiểm tra lại tên hoặc hỏi về các loại phòng hiện có.";
-        }
-
-        $phong = Phong::where('id_loai_phong', $loaiPhong->id)->first();
-
-        if ($phong && $phong->gia_mac_dinh) {
-            return "Giá mặc định cho loại phòng {$loaiPhong->ten_loai_phong} là " . number_format($phong->gia_mac_dinh) . " VND mỗi đêm.";
-        } else {
-            return "Rất tiếc, không có thông tin giá cho loại phòng {$loaiPhong->ten_loai_phong} vào lúc này.";
-        }
+    if (!$tenLoaiPhong) {
+        return [
+            'fulfillmentMessages' => [
+                ['text' => ['text' => ['Bạn muốn hỏi giá của loại phòng nào? Vui lòng cung cấp tên loại phòng.']]]
+            ]
+        ];
     }
+
+    $tenLoaiPhongNormalized = $this->normalizeRoomTypeName($tenLoaiPhong);
+
+    $loaiPhong = LoaiPhong::whereRaw('LOWER(ten_loai_phong) LIKE ?', ['%' . strtolower($tenLoaiPhongNormalized) . '%'])
+                            ->first();
+
+    if (!$loaiPhong) {
+        return [
+            'fulfillmentMessages' => [
+                ['text' => ['text' => ["Rất tiếc, tôi không tìm thấy thông tin về '{$tenLoaiPhong}'. Bạn có thể kiểm tra lại tên hoặc hỏi về các loại phòng hiện có."]]]
+            ]
+        ];
+    }
+
+    $phong = Phong::where('id_loai_phong', $loaiPhong->id)->first();
+
+    if ($phong && $phong->gia_mac_dinh) {
+        $giaMacDinhFormatted = number_format($phong->gia_mac_dinh) . " VND mỗi đêm.";
+
+        // --- Bắt đầu thay đổi để trả về Rich Content ---
+        return [
+            'fulfillmentMessages' => [
+                [
+                    'payload' => [
+                        'richContent' => [
+                            [
+                                [
+                                    'type' => 'info',
+                                    'title' => "Giá phòng {$loaiPhong->ten_loai_phong}",
+                                    'subtitle' => "💰: {$giaMacDinhFormatted}",
+                                    // Bạn có thể thêm imageUrl nếu có hình ảnh cho loại phòng
+                                    // 'image' => [
+                                    //     'src' => ['rawUrl' => 'URL_HINH_ANH_CUA_BAN']
+                                    // ],
+                                    // Bạn có thể thêm action link nếu muốn
+                                    // 'actionLink' => 'URL_DAT_PHONG'
+                                ]
+                            ]
+                        ]
+                    ]
+                ]
+            ]
+        ];
+        // --- Kết thúc thay đổi ---
+
+    } else {
+        return [
+            'fulfillmentMessages' => [
+                ['text' => ['text' => ["Rất tiếc, không có thông tin giá cho loại phòng {$loaiPhong->ten_loai_phong} vào lúc này."]]]
+            ]
+        ];
+    }
+}
 
 
     /**
