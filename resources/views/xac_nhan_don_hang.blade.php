@@ -1,558 +1,73 @@
-<!DOCTYPE html
-    PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html dir="ltr" xmlns="http://www.w3.org/1999/xhtml" xmlns:o="urn:schemas-microsoft-com:office:office" lang="vi"
-    style="padding:0;Margin:0">
-
+<!DOCTYPE html>
+<html>
 <head>
     <meta charset="UTF-8">
-    <meta content="width=device-width, initial-scale=1" name="viewport">
-    <meta name="x-apple-disable-message-reformatting">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta content="telephone=no" name="format-detection">
-    <title>New message 4</title><!--[if (mso 16)]>
-    <style type="text/css">
-    a {text-decoration: none;}
-    </style>
-    <![endif]--><!--[if gte mso 9]><style>sup { font-size: 100% !important; }</style><![endif]--><!--[if gte mso 9]>
-<xml>
-    <o:OfficeDocumentSettings>
-    <o:AllowPNG></o:AllowPNG>
-    <o:PixelsPerInch>96</o:PixelsPerInch>
-    </o:OfficeDocumentSettings>
-</xml>
-<![endif]--><!--[if !mso]><!-- -->
-    <link href="https://fonts.googleapis.com/css?family=Lato:400,400i,700,700i" rel="stylesheet"><!--<![endif]-->
-    <style type="text/css">
-        #outlook a {
-            padding: 0;
-        }
-
-        .ExternalClass {
-            width: 100%;
-        }
-
-        .ExternalClass,
-        .ExternalClass p,
-        .ExternalClass span,
-        .ExternalClass font,
-        .ExternalClass td,
-        .ExternalClass div {
-            line-height: 100%;
-        }
-
-        .es-button {
-            mso-style-priority: 100 !important;
-            text-decoration: none !important;
-        }
-
-        a[x-apple-data-detectors] {
-            color: inherit !important;
-            text-decoration: none !important;
-            font-size: inherit !important;
-            font-family: inherit !important;
-            font-weight: inherit !important;
-            line-height: inherit !important;
-        }
-
-        .es-desk-hidden {
-            display: none;
-            float: left;
-            overflow: hidden;
-            width: 0;
-            max-height: 0;
-            line-height: 0;
-            mso-hide: all;
-        }
-
-        @media only screen and (max-width:600px) {
-
-            p,
-            ul li,
-            ol li,
-            a {
-                line-height: 150% !important
-            }
-
-            h1,
-            h2,
-            h3,
-            h1 a,
-            h2 a,
-            h3 a {
-                line-height: 120% !important
-            }
-
-            h1 {
-                font-size: 30px !important;
-                text-align: center
-            }
-
-            h2 {
-                font-size: 26px !important;
-                text-align: center
-            }
-
-            h3 {
-                font-size: 20px !important;
-                text-align: center
-            }
-
-            .es-header-body h1 a,
-            .es-content-body h1 a,
-            .es-footer-body h1 a {
-                font-size: 30px !important
-            }
-
-            .es-header-body h2 a,
-            .es-content-body h2 a,
-            .es-footer-body h2 a {
-                font-size: 26px !important
-            }
-
-            .es-header-body h3 a,
-            .es-content-body h3 a,
-            .es-footer-body h3 a {
-                font-size: 20px !important
-            }
-
-            .es-menu td a {
-                font-size: 16px !important
-            }
-
-            .es-header-body p,
-            .es-header-body ul li,
-            .es-header-body ol li,
-            .es-header-body a {
-                font-size: 16px !important
-            }
-
-            .es-content-body p,
-            .es-content-body ul li,
-            .es-content-body ol li,
-            .es-content-body a {
-                font-size: 16px !important
-            }
-
-            .es-footer-body p,
-            .es-footer-body ul li,
-            .es-footer-body ol li,
-            .es-footer-body a {
-                font-size: 16px !important
-            }
-
-            .es-infoblock p,
-            .es-infoblock ul li,
-            .es-infoblock ol li,
-            .es-infoblock a {
-                font-size: 12px !important
-            }
-
-            *[class="gmail-fix"] {
-                display: none !important
-            }
-
-            .es-m-txt-c,
-            .es-m-txt-c h1,
-            .es-m-txt-c h2,
-            .es-m-txt-c h3 {
-                text-align: center !important
-            }
-
-            .es-m-txt-r,
-            .es-m-txt-r h1,
-            .es-m-txt-r h2,
-            .es-m-txt-r h3 {
-                text-align: right !important
-            }
-
-            .es-m-txt-l,
-            .es-m-txt-l h1,
-            .es-m-txt-l h2,
-            .es-m-txt-l h3 {
-                text-align: left !important
-            }
-
-            .es-m-txt-r img,
-            .es-m-txt-c img,
-            .es-m-txt-l img {
-                display: inline !important
-            }
-
-            .es-button-border {
-                display: block !important
-            }
-
-            a.es-button,
-            button.es-button {
-                font-size: 20px !important;
-                display: block !important;
-                padding: 15px 25px 15px 25px !important
-            }
-
-            .es-btn-fw {
-                border-width: 10px 0px !important;
-                text-align: center !important
-            }
-
-            .es-adaptive table,
-            .es-btn-fw,
-            .es-btn-fw-brdr,
-            .es-left,
-            .es-right {
-                width: 100% !important
-            }
-
-            .es-content table,
-            .es-header table,
-            .es-footer table,
-            .es-content,
-            .es-footer,
-            .es-header {
-                width: 100% !important;
-                max-width: 600px !important
-            }
-
-            .es-adapt-td {
-                display: block !important;
-                width: 100% !important
-            }
-
-            .adapt-img {
-                width: 100% !important;
-                height: auto !important
-            }
-
-            .es-m-p0 {
-                padding: 0px !important
-            }
-
-            .es-m-p0r {
-                padding-right: 0px !important
-            }
-
-            .es-m-p0l {
-                padding-left: 0px !important
-            }
-
-            .es-m-p0t {
-                padding-top: 0px !important
-            }
-
-            .es-m-p0b {
-                padding-bottom: 0 !important
-            }
-
-            .es-m-p20b {
-                padding-bottom: 20px !important
-            }
-
-            .es-mobile-hidden,
-            .es-hidden {
-                display: none !important
-            }
-
-            tr.es-desk-hidden,
-            td.es-desk-hidden,
-            table.es-desk-hidden {
-                width: auto !important;
-                overflow: visible !important;
-                float: none !important;
-                max-height: inherit !important;
-                line-height: inherit !important
-            }
-
-            tr.es-desk-hidden {
-                display: table-row !important
-            }
-
-            table.es-desk-hidden {
-                display: table !important
-            }
-
-            td.es-desk-menu-hidden {
-                display: table-cell !important
-            }
-
-            .es-menu td {
-                width: 1% !important
-            }
-
-            table.es-table-not-adapt,
-            .esd-block-html table {
-                width: auto !important
-            }
-
-            table.es-social {
-                display: inline-block !important
-            }
-
-            table.es-social td {
-                display: inline-block !important
-            }
-
-            .es-desk-hidden {
-                display: table-row !important;
-                width: auto !important;
-                overflow: visible !important;
-                max-height: inherit !important
-            }
-        }
-
-        @media screen and (max-width:384px) {
-            .mail-message-content {
-                width: 414px !important
-            }
-        }
+    <title>XÁC NHẬN ĐẶT PHÒNG THÀNH CÔNG</title>
+    <style>
+        body{font-family:Arial,sans-serif;background:#f4f4f4;margin:0;padding:20px;color:#333}
+        .container{max-width:600px;margin:auto;background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 10px 30px rgba(0,0,0,.1)}
+        .header{background:#FFA73B;padding:30px;text-align:center;color:white}
+        .header h1{margin:0;font-size:32px}
+        .content{padding:40px;line-height:1.7}
+        table{width:100%;border-collapse:collapse;margin:25px 0;background:#fafafa;border-radius:8px;overflow:hidden}
+        th{background:#FFA73B;color:white;padding:16px;text-align:left}
+        td{padding:16px;border-bottom:1px solid #eee}
+        .total td{background:#fff8e1;font-size:20px;font-weight:bold}
+        .text-right{text-align:right}
+        .text-success{color:#27ae60}
+        .text-danger{color:#e74c3c}
+        .qr{text-align:center;margin:30px 0}
+        .qr img{border:8px solid #fff;box-shadow:0 8px 25px rgba(0,0,0,.15);border-radius:12px}
+        small{color:#777}
     </style>
 </head>
+<body>
+<div class="container">
+    <div class="header"><h1>XÁC NHẬN ĐẶT PHÒNG</h1></div>
+    <div class="content">
+        <p>Xin chào <strong>{{ $ho_va_ten }}</strong>,</p>
+        <p>Cảm ơn quý khách đã đặt phòng tại khách sạn chúng tôi!</p>
+        <p>Thời gian lưu trú: <strong>{{ $tu_ngay }}</strong> → <strong>{{ $den_ngay }}</strong> ({{ $so_dem }} đêm)</p>
 
-<body
-    style="width:100%;font-family:lato, 'helvetica neue', helvetica, arial, sans-serif;-webkit-text-size-adjust:100%;-ms-text-size-adjust:100%;padding:0;Margin:0">
-    <div dir="ltr" class="es-wrapper-color" lang="vi" style="background-color:#F4F4F4"><!--[if gte mso 9]>
-   <v:background xmlns:v="urn:schemas-microsoft-com:vml" fill="t">
-    <v:fill type="tile" color="#f4f4f4"></v:fill>
-   </v:background>
-  <![endif]-->
-        <table class="es-wrapper" width="100%" cellspacing="0" cellpadding="0" role="none"
-            style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px;padding:0;Margin:0;width:100%;height:100%;background-repeat:repeat;background-position:center top;background-color:#F4F4F4">
-            <tr class="gmail-fix" height="0" style="border-collapse:collapse">
-                <td style="padding:0;Margin:0">
-                    <table cellspacing="0" cellpadding="0" border="0" align="center" role="none"
-                        style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px;width:600px">
-                        <tr style="border-collapse:collapse">
-                            <td cellpadding="0" cellspacing="0" border="0"
-                                style="padding:0;Margin:0;line-height:1px;min-width:600px" height="0"><img
-                                    src="https://rypuop.stripocdn.email/content/guids/CABINET_837dc1d79e3a5eca5eb1609bfe9fd374/images/41521605538834349.png"
-                                    style="display:block;border:0;outline:none;text-decoration:none;-ms-interpolation-mode:bicubic;max-height:0px;min-height:0px;min-width:600px;width:600px"
-                                    alt width="600" height="1"></td>
-                        </tr>
-                    </table>
-                </td>
-            </tr>
-            <tr style="border-collapse:collapse">
-                <td valign="top" style="padding:0;Margin:0">
-                    <table class="es-header" cellspacing="0" cellpadding="0" align="center" role="none"
-                        style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px;table-layout:fixed !important;width:100%;background-color:#FFA73B;background-repeat:repeat;background-position:center top">
-                        <tr style="border-collapse:collapse">
-                            <td align="center" style="padding:0;Margin:0">
-                                <table class="es-header-body" cellspacing="0" cellpadding="0" align="center"
-                                    role="none"
-                                    style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px;background-color:transparent;width:600px">
-                                    <tr style="border-collapse:collapse">
-                                        <td align="left"
-                                            style="Margin:0;padding-bottom:10px;padding-left:10px;padding-right:10px;padding-top:20px">
-                                            <table width="100%" cellspacing="0" cellpadding="0" role="none"
-                                                style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px">
-                                                <tr style="border-collapse:collapse">
-                                                    <td valign="top" align="center"
-                                                        style="padding:0;Margin:0;width:580px">
-                                                        <table width="100%" cellspacing="0" cellpadding="0"
-                                                            role="presentation"
-                                                            style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px">
-                                                            <tr style="border-collapse:collapse">
-                                                                <td align="center"
-                                                                    style="Margin:0;padding-left:10px;padding-right:10px;padding-top:25px;padding-bottom:25px;font-size:0">
-                                                                    <img src="https://rypuop.stripocdn.email/content/guids/CABINET_3df254a10a99df5e44cb27b842c2c69e/images/7331519201751184.png"
-                                                                        alt
-                                                                        style="display:block;border:0;outline:none;text-decoration:none;-ms-interpolation-mode:bicubic"
-                                                                        width="40"></td>
-                                                            </tr>
-                                                        </table>
-                                                    </td>
-                                                </tr>
-                                            </table>
-                                        </td>
-                                    </tr>
-                                </table>
-                            </td>
-                        </tr>
-                    </table>
-                    <table class="es-content" cellspacing="0" cellpadding="0" align="center" role="none"
-                        style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px;table-layout:fixed !important;width:100%">
-                        <tr style="border-collapse:collapse">
-                            <td style="padding:0;Margin:0;background-color:#ffa73b" bgcolor="#ffa73b" align="center">
-                                <table class="es-content-body"
-                                    style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px;background-color:transparent;width:600px"
-                                    cellspacing="0" cellpadding="0" align="center" role="none">
-                                    <tr style="border-collapse:collapse">
-                                        <td align="left" style="padding:0;Margin:0">
-                                            <table width="100%" cellspacing="0" cellpadding="0" role="none"
-                                                style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px">
-                                                <tr style="border-collapse:collapse">
-                                                    <td valign="top" align="center"
-                                                        style="padding:0;Margin:0;width:600px">
-                                                        <table
-                                                            style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:separate;border-spacing:0px;background-color:#ffffff;border-radius:4px"
-                                                            width="100%" cellspacing="0" cellpadding="0"
-                                                            bgcolor="#ffffff" role="presentation">
-                                                            <tr style="border-collapse:collapse">
-                                                                <td align="center"
-                                                                    style="Margin:0;padding-bottom:5px;padding-left:30px;padding-right:30px;padding-top:35px">
-                                                                    <h1
-                                                                        style="Margin:0;line-height:58px;mso-line-height-rule:exactly;font-family:lato, 'helvetica neue', helvetica, arial, sans-serif;font-size:48px;font-style:normal;font-weight:normal;color:#111111">
-                                                                        XÁC NHẬN ĐƠN HÀNG</h1>
-                                                                </td>
-                                                            </tr>
-                                                            <tr style="border-collapse:collapse">
-                                                                <td bgcolor="#ffffff" align="center"
-                                                                    style="Margin:0;padding-top:5px;padding-bottom:5px;padding-left:20px;padding-right:20px;font-size:0">
-                                                                    <table width="100%" height="100%"
-                                                                        cellspacing="0" cellpadding="0"
-                                                                        border="0" role="presentation"
-                                                                        style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px">
-                                                                        <tr style="border-collapse:collapse">
-                                                                            <td
-                                                                                style="padding:0;Margin:0;border-bottom:1px solid #ffffff;background:#FFFFFF none repeat scroll 0% 0%;height:1px;width:100%;margin:0px">
-                                                                            </td>
-                                                                        </tr>
-                                                                    </table>
-                                                                </td>
-                                                            </tr>
-                                                        </table>
-                                                    </td>
-                                                </tr>
-                                            </table>
-                                        </td>
-                                    </tr>
-                                </table>
-                            </td>
-                        </tr>
-                    </table>
-                    <table class="es-content" cellspacing="0" cellpadding="0" align="center" role="none"
-                        style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px;table-layout:fixed !important;width:100%">
-                        <tr style="border-collapse:collapse">
-                            <td align="center" style="padding:0;Margin:0">
-                                <table class="es-content-body"
-                                    style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px;background-color:transparent;width:600px"
-                                    cellspacing="0" cellpadding="0" align="center" role="none">
-                                    <tr style="border-collapse:collapse">
-                                        <td align="left" style="padding:0;Margin:0">
-                                            <table width="100%" cellspacing="0" cellpadding="0" role="none"
-                                                style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px">
-                                                <tr style="border-collapse:collapse">
-                                                    <td valign="top" align="center"
-                                                        style="padding:0;Margin:0;width:600px">
-                                                        <table
-                                                            style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:separate;border-spacing:0px;border-radius:4px;background-color:#ffffff"
-                                                            width="100%" cellspacing="0" cellpadding="0"
-                                                            bgcolor="#ffffff" role="presentation">
-                                                            <tr style="border-collapse:collapse">
-                                                                <td class="es-m-txt-l" bgcolor="#ffffff"
-                                                                    align="left"
-                                                                    style="Margin:0;padding-top:20px;padding-bottom:20px;padding-left:30px;padding-right:30px">
-                                                                    <p
-                                                                        style="Margin:0;-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;font-family:lato, 'helvetica neue', helvetica, arial, sans-serif;line-height:27px;color:#666666;font-size:18px">
-                                                                        Cảm ơn bạn {{ $data['ho_va_ten'] }} đã đặt phòng
-                                                                        tại khách sạn của chúng tôi.</p>
-                                                                    <p
-                                                                        style="Margin:0;-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;font-family:lato, 'helvetica neue', helvetica, arial, sans-serif;line-height:27px;color:#666666;font-size:18px">
-                                                                        Thời gian ở của bạn từ ngày
-                                                                        <strong>{{ $data['tu_ngay'] }}</strong> đến ngày
-                                                                        <strong>{{ $data['den_ngay'] }}</strong>.&nbsp;&nbsp;
-                                                                    </p>
-                                                                    <p
-                                                                        style="Margin:0;-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;font-family:lato, 'helvetica neue', helvetica, arial, sans-serif;line-height:27px;color:#666666;font-size:18px">
-                                                                        Tổng số tiền cần thanh toán của bạn là:<strong>
-                                                                            <span
-                                                                                style="color:#FF0000">{{ $data['tong_tien'] }}</span></strong><strong><span
-                                                                                style="color:#FF0000"></span></strong>
-                                                                    </p>
-                                                                    <p
-                                                                        style="Margin:0;-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;font-family:lato, 'helvetica neue', helvetica, arial, sans-serif;line-height:27px;color:#666666;font-size:18px">
-                                                                        Bạn có thể thực hiện thanh toán qua mã QR dưới
-                                                                        đây<br></p>
-                                                                </td>
-                                                            </tr>
-                                                            <tr style="border-collapse:collapse">
-                                                                <td align="center"
-                                                                    style="padding:0;Margin:0;font-size:0px"><img
-                                                                        class="adapt-img"
-                                                                        src="{{ $data['ma_qr_code'] }}" alt
-                                                                        style="display:block;border:0;outline:none;text-decoration:none;-ms-interpolation-mode:bicubic"
-                                                                        height="250"></td>
-                                                            </tr>
-                                                            <tr style="border-collapse:collapse">
-                                                                <td class="es-m-txt-l" align="left"
-                                                                    style="padding:0;Margin:0;padding-top:20px;padding-left:30px;padding-right:30px">
-                                                                    <p
-                                                                        style="Margin:0;-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;font-family:lato, 'helvetica neue', helvetica, arial, sans-serif;line-height:27px;color:#666666;font-size:18px">
-                                                                        Nếu bạn có bất kỳ câu hỏi nào khác, có thể liên
-                                                                        hệ qua email của chúng tôi ở đây: <span
-                                                                            style="color:#FF0000"><em><strong>hotel@gmail.com</strong></em></span><br><em>Đây
-                                                                            là email tự động vui lòng không reply lại
-                                                                            email này</em></p>
-                                                                    <p
-                                                                        style="Margin:0;-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;font-family:lato, 'helvetica neue', helvetica, arial, sans-serif;line-height:27px;color:#666666;font-size:18px">
-                                                                        <br></p>
-                                                                </td>
-                                                            </tr>
-                                                            <tr style="border-collapse:collapse">
-                                                                <td class="es-m-txt-l" align="left"
-                                                                    style="Margin:0;padding-top:20px;padding-left:30px;padding-right:30px;padding-bottom:40px">
-                                                                    <p
-                                                                        style="Margin:0;-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;font-family:lato, 'helvetica neue', helvetica, arial, sans-serif;line-height:27px;color:#666666;font-size:18px">
-                                                                        Cheers,</p>
-                                                                    <p
-                                                                        style="Margin:0;-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;font-family:lato, 'helvetica neue', helvetica, arial, sans-serif;line-height:27px;color:#666666;font-size:18px">
-                                                                        Hotel</p>
-                                                                </td>
-                                                            </tr>
-                                                        </table>
-                                                    </td>
-                                                </tr>
-                                            </table>
-                                        </td>
-                                    </tr>
-                                </table>
-                            </td>
-                        </tr>
-                    </table>
-                    <table class="es-content" cellspacing="0" cellpadding="0" align="center" role="none"
-                        style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px;table-layout:fixed !important;width:100%">
-                        <tr style="border-collapse:collapse">
-                            <td align="center" style="padding:0;Margin:0">
-                                <table class="es-content-body"
-                                    style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px;background-color:transparent;width:600px"
-                                    cellspacing="0" cellpadding="0" align="center" role="none">
-                                    <tr style="border-collapse:collapse">
-                                        <td align="left" style="padding:0;Margin:0">
-                                            <table width="100%" cellspacing="0" cellpadding="0" role="none"
-                                                style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px">
-                                                <tr style="border-collapse:collapse">
-                                                    <td valign="top" align="center"
-                                                        style="padding:0;Margin:0;width:600px">
-                                                        <table width="100%" cellspacing="0" cellpadding="0"
-                                                            role="presentation"
-                                                            style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px">
-                                                            <tr style="border-collapse:collapse">
-                                                                <td align="center"
-                                                                    style="Margin:0;padding-top:10px;padding-bottom:20px;padding-left:20px;padding-right:20px;font-size:0">
-                                                                    <table width="100%" height="100%"
-                                                                        cellspacing="0" cellpadding="0"
-                                                                        border="0" role="presentation"
-                                                                        style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px">
-                                                                        <tr style="border-collapse:collapse">
-                                                                            <td
-                                                                                style="padding:0;Margin:0;border-bottom:1px solid #f4f4f4;background:#FFFFFF none repeat scroll 0% 0%;height:1px;width:100%;margin:0px">
-                                                                            </td>
-                                                                        </tr>
-                                                                    </table>
-                                                                </td>
-                                                            </tr>
-                                                        </table>
-                                                    </td>
-                                                </tr>
-                                            </table>
-                                        </td>
-                                    </tr>
-                                </table>
-                            </td>
-                        </tr>
-                    </table>
-                </td>
+        <table>
+            <tr><th>Hạng mục</th><th class="text-right">Thành tiền</th></tr>
+            <tr><td>Tiền phòng</td><td class="text-right">{{ number_format($tien_phong, 0, ',', '.') }} ₫</td></tr>
+
+            @if($tien_dich_vu > 0)
+                <tr>
+                    <td>Dịch vụ bổ sung
+                        @foreach($chi_tiet_dich_vu as $dv)
+                            <br><small>• {{ $dv['ten'] }} (x{{ $dv['so_luong'] }}): {{ number_format($dv['thanh_tien'], 0, ',', '.') }} ₫</small>
+                        @endforeach
+                    </td>
+                    <td class="text-right text-success">+ {{ number_format($tien_dich_vu, 0, ',', '.') }} ₫</td>
+                </tr>
+            @endif
+
+            <tr class="total">
+                <td><strong>TỔNG CỘNG</strong></td>
+                <td class="text-right text-danger"><strong>{{ number_format($tong_tien, 0, ',', '.') }} ₫</strong></td>
             </tr>
         </table>
-    </div>
-</body>
 
+        @if($ma_qr_code)
+            <div class="qr">
+                <p><strong>Quét mã QR để thanh toán:</strong></p>
+                <img src="{{ $ma_qr_code }}" width="260" height="260">
+            </div>
+        @else
+            <p style="background:#fff3cd;padding:15px;border-radius:8px;">
+                <strong>Lưu ý:</strong> Tổng tiền lớn, QR không hỗ trợ. Vui lòng chuyển khoản thủ công:<br>
+                <strong>MB Bank - 1700116117118</strong><br>
+                Nội dung: <strong>TTDP{{ $hoaDon->id ?? '' }}</strong>
+            </p>
+        @endif
+
+        <p>Liên hệ: <strong>hotel@gmail.com</strong></p>
+        <p><em>Email tự động – không reply.</em></p>
+        <hr>
+        <p>Trân trọng,<br><strong>Đội ngũ Hotel</strong></p>
+    </div>
+</div>
+</body>
 </html>

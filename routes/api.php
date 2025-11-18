@@ -25,6 +25,9 @@ use Illuminate\Support\Facades\Route;
 
 // Route để Dialogflow gọi đến. Sử dụng middleware xác thực nếu bạn thêm header.
 Route::post('/dialogflow/webhook', [DialogflowWebhookController::class, 'handle'])->name('dialogflow.webhook');
+Route::get('/hoa-don/chi-tiet-full/{id}', [HoaDonController::class, 'chiTietFull']);
+// CHI TIẾT HOÁ ĐƠN ĐẦY ĐỦ (PHÒNG + DỊCH VỤ) - ĐÃ HOẠT ĐỘNG TỐT NHẤT
+Route::get('hoa-don/chi-tiet/{id}', [HoaDonController::class, 'chiTietHoaDon']);
 
 Route::get("/giao-dich", [GiaoDichController::class, 'index']);
 Route::get('/dich-vu', [DichVuController::class, 'getDichVuForCustomer']);

@@ -14,20 +14,21 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Log;
 
 class HoaDonController extends Controller
 {
     public function timKiem(Request $request)
     {
         $id_chuc_nang   = 62;
-        $user   =  Auth::guard('sanctum')->user();
-        $check  =   ChiTietPhanQuyen::where('id_quyen', $user->id_chuc_vu)
+        $user           = Auth::guard('sanctum')->user();
+        $check          = ChiTietPhanQuyen::where('id_quyen', $user->id_chuc_vu)
             ->where('id_chuc_nang', $id_chuc_nang)
             ->first();
         if (!$check) {
             return response()->json([
-                'status'    =>  false,
-                'message'   =>  'Bạn không đủ quyền truy cập chức năng này!',
+                'status'    => false,
+                'message'   => 'Bạn không đủ quyền truy cập chức năng này!',
             ]);
         }
 
@@ -39,17 +40,15 @@ class HoaDonController extends Controller
             ->orWhere('ngay_di', 'like', $noi_dung)
             ->get();
 
-        return response()->json([
-            'data'  =>  $data
-        ]);
+        return response()->json(['data' => $data]);
     }
 
     public function timKiemKhachHang(Request $request)
     {
         $noi_dung   = '%' . $request->noi_dung_tim . '%';
-        $user   =  Auth::guard('sanctum')->user();
-        if($user && $user instanceof \App\Models\KhachHang) {
-            $data   = HoaDon::where(function ($query) use ($noi_dung) {
+        $user       = Auth::guard('sanctum')->user();
+        if ($user && $user instanceof \App\Models\KhachHang) {
+            $data = HoaDon::where(function ($query) use ($noi_dung) {
                 $query->where('ma_hoa_don', 'like', $noi_dung)
                       ->orWhere('tong_tien', 'like', $noi_dung)
                       ->orWhere('ngay_den', 'like', $noi_dung)
@@ -58,186 +57,238 @@ class HoaDonController extends Controller
             ->where('id_khach_hang', $user->id)
             ->get();
 
-            return response()->json([
-                'data'  =>  $data
-            ]);
+            return response()->json(['data' => $data]);
         }
-
     }
 
+    // HÀM CHÍNH – ĐÃ SỬA HOÀN CHỈNH ĐỂ CÓ TIỀN DỊCH VỤ
     public function datPhong(Request $request)
     {
-        $ngay_den               =   Carbon::createFromDate($request->tt_dat_phong['ngay_den']);
-        $data['tu_ngay']        =  $ngay_den->format('d/m/Y');
-        $ngay_di    =   Carbon::createFromDate($request->tt_dat_phong['ngay_di']);
-        $data_loai_phong    = $request->tt_loai_phong;
-        $khach_hang =   Auth::guard('sanctum')->user();
-        $ds_loai_phong_khach_dat    =   [];
+        $khach_hang = Auth::guard('sanctum')->user();
 
-        foreach ($data_loai_phong as $key => $value) {
-            if (isset($value['chon_phong']) && $value['chon_phong'] == true && $value['so_phong_dat'] > 0) {
-                array_push($ds_loai_phong_khach_dat, $value);
-            }
-        }
-
-        $hoaDon     =   HoaDon::create([
-            'ma_hoa_don'            =>  Str::uuid(),
-            'id_khach_hang'         =>  $khach_hang->id,
-            'ngay_den'              =>  $ngay_den,
-            'ngay_di'               =>  $ngay_di
+        // 1. Tạo hoá đơn
+        $hoaDon = HoaDon::create([
+            'ma_hoa_don'    => Str::uuid(),
+            'id_khach_hang' => $khach_hang->id,
+            'ngay_den'      => $request->tt_dat_phong['ngay_den'],
+            'ngay_di'       => $request->tt_dat_phong['ngay_di'],
+            'tong_tien'     => 0
         ]);
 
-        while ($ngay_den < $ngay_di) {
-            // $ngay_den = 24/5/2024
-            foreach ($ds_loai_phong_khach_dat as $key => $value) {
-                $ds_phong = ChiTietThuePhong::join('phongs', 'chi_tiet_thue_phongs.id_phong', 'phongs.id')
-                    ->where('phongs.id_loai_phong', $value['id'])
-                    ->whereDate('chi_tiet_thue_phongs.ngay_thue', $ngay_den)
-                    ->where('chi_tiet_thue_phongs.tinh_trang', 1)
-                    ->select('chi_tiet_thue_phongs.*')
-                    ->take($value['so_phong_dat'])->get();
-                $ds_phong_ids   = $ds_phong->pluck('id');
+        $tongTienPhong = 0;
+        $ngay_den = Carbon::parse($request->tt_dat_phong['ngay_den']);
+        $ngay_di  = Carbon::parse($request->tt_dat_phong['ngay_di']);
+        $temp = $ngay_den->copy();
 
-                ChiTietThuePhong::whereIn('id', $ds_phong_ids)
-                    ->update([
-                        'tinh_trang'    =>  2,
-                        'id_hoa_don'    =>  $hoaDon->id
+        // 2. ĐẶT PHÒNG
+        while ($temp->lt($ngay_di)) {
+            foreach ($request->tt_loai_phong ?? [] as $loai) {
+                if (empty($loai['so_phong_dat']) || $loai['so_phong_dat'] <= 0) continue;
+
+                $soPhongCanDat = (int)$loai['so_phong_dat'];
+                $loaiPhongId   = $loai['id'];
+
+                $dsPhongTrong = DB::table('phongs')
+                    ->where('id_loai_phong', $loaiPhongId)
+                    ->whereNotExists(function ($query) use ($temp) {
+                        $query->select(DB::raw(1))
+                              ->from('chi_tiet_thue_phongs')
+                              ->whereColumn('phongs.id', 'chi_tiet_thue_phongs.id_phong')
+                              ->whereDate('chi_tiet_thue_phongs.ngay_thue', $temp->toDateString())
+                              ->whereIn('chi_tiet_thue_phongs.tinh_trang', [2, 3]);
+                    })
+                    ->inRandomOrder()
+                    ->limit($soPhongCanDat)
+                    ->get();
+
+                /** @var \stdClass{id: int, gia_mac_dinh: float} $phong */
+                foreach ($dsPhongTrong as $phong) {
+                    ChiTietThuePhong::create([
+                        'id_phong'     => $phong->id,
+                        'ngay_thue'    => $temp->toDateString(),
+                        'gia_thue'     => $phong->gia_mac_dinh,
+                        'tinh_trang'   => 2,
+                        'id_hoa_don'   => $hoaDon->id,
+                        'created_at'   => now(),
+                        'updated_at'   => now(),
                     ]);
+
+                    $tongTienPhong += $phong->gia_mac_dinh;
+                }
             }
-            $ngay_den->addDay();
+            $temp->addDay();
         }
 
-        $hoaDon->tong_tien  = ChiTietThuePhong::where('id_hoa_don', $hoaDon->id)->sum('gia_thue');
+        // 3. DỊCH VỤ - KHÔNG FORMAT Ở ĐÂY NỮA
+        $tongTienDichVu = 0;
+        $chiTietDichVu  = [];
+
+        if ($request->has('ds_dich_vu') && is_array($request->ds_dich_vu)) {
+            foreach ($request->ds_dich_vu as $dv) {
+                $id_dich_vu = $dv['id'] ?? 0;
+                $don_gia    = (int)($dv['don_gia'] ?? 0);
+                if ($id_dich_vu > 0 && $don_gia > 0) {
+                    DB::table('dich_vu_hoa_don')->insert([
+                        'id_hoa_don' => $hoaDon->id,
+                        'id_dich_vu' => $id_dich_vu,
+                        'so_luong'   => 1,
+                        'thanh_tien' => $don_gia,
+                        'created_at' => now(),
+                        'updated_at' => now(),
+                    ]);
+
+                    $ten_dv = DB::table('dich_vus')->where('id', $id_dich_vu)->value('ten_dich_vu') ?? 'Dịch vụ';
+
+                    $chiTietDichVu[] = [
+                        'ten'        => $ten_dv,
+                        'so_luong'   => 1,
+                        'don_gia'    => $don_gia,        // số thô
+                        'thanh_tien' => $don_gia         // số thô để tính đúng
+                    ];
+                    $tongTienDichVu += $don_gia;
+                }
+            }
+        }
+
+        // 4. Cập nhật tổng tiền
+        $hoaDon->tong_tien = $tongTienPhong + $tongTienDichVu;
         $hoaDon->save();
 
-        // Gửi EMAIL
-        $data['ho_va_ten']      =  $khach_hang->ho_lot . " " . $khach_hang->ten;
-        $data['den_ngay']       =  $ngay_di->format('d/m/Y');
-        $data['tong_tien']      =  number_format($hoaDon->tong_tien, 0, ",", ".");
-        $link_demo  = "https://img.vietqr.io/image/MB-1700116117118-compact.jpg?amount=" . $hoaDon->tong_tien . "&addInfo=TTDP" . $hoaDon->id;
-        $data['ma_qr_code']     =  $link_demo;
+        // 5. GỬI MAIL - FIX QR + HIỂN THỊ TIỀN DỊCH VỤ CHUẨN
+        $qrCodeUrl = null;
+        try {
+            $potentialQr = "https://img.vietqr.io/image/MB-1700116117118-compact.jpg?amount={$hoaDon->tong_tien}&addInfo=TTDP{$hoaDon->id}";
+            if (strlen($potentialQr) < 2000) {
+                $qrCodeUrl = $potentialQr;
+            }
+        } catch (\Throwable $e) {
+            Log::warning('QR bị lỗi cho hóa đơn ' . $hoaDon->id);
+        }
 
-        Mail::to($khach_hang->email)->send(new SendMail('Xác Nhân Đơn Đặt Phòng Tại Khách Sạn', 'xac_nhan_don_hang', $data));
+        $mailData = [
+            'ho_va_ten'        => trim($khach_hang->ho_lot . ' ' . $khach_hang->ten),
+            'tu_ngay'          => Carbon::parse($hoaDon->ngay_den)->format('d/m/Y'),
+            'den_ngay'         => Carbon::parse($hoaDon->ngay_di)->format('d/m/Y'),
+            'so_dem'           => $ngay_den->diffInDays($ngay_di),
+            'tien_phong'       => $tongTienPhong,
+            'tien_dich_vu'     => $tongTienDichVu,
+            'chi_tiet_dich_vu' => $chiTietDichVu,
+            'tong_tien'        => $hoaDon->tong_tien,
+            'ma_qr_code'       => $qrCodeUrl,
+        ];
+
+        try {
+            Mail::send('xac_nhan_don_hang', $mailData, function ($message) use ($khach_hang) {
+                $message->to($khach_hang->email)->subject('XÁC NHẬN ĐẶT PHÒNG THÀNH CÔNG');
+            });
+        } catch (\Exception $e) {
+            Log::error('Lỗi gửi mail hóa đơn ' . $hoaDon->id . ': ' . $e->getMessage());
+        }
 
         return response()->json([
-            'status'    =>  true,
-            'message'   =>  'Đã đặt phòng thành công!',
+            'status'  => true,
+            'message' => 'Đặt phòng thành công! Vui lòng kiểm tra email.'
         ]);
     }
-
     public function getData()
     {
-        $id_chuc_nang   = 59;
-        $user   =  Auth::guard('sanctum')->user();
-        $check  =   ChiTietPhanQuyen::where('id_quyen', $user->id_chuc_vu)
+        $id_chuc_nang = 59;
+        $user = Auth::guard('sanctum')->user();
+        $check = ChiTietPhanQuyen::where('id_quyen', $user->id_chuc_vu)
             ->where('id_chuc_nang', $id_chuc_nang)
             ->first();
         if (!$check) {
             return response()->json([
-                'status'    =>  false,
-                'message'   =>  'Bạn không đủ quyền truy cập chức năng này!',
+                'status'  => false,
+                'message' => 'Bạn không đủ quyền truy cập chức năng này!',
             ]);
         }
 
-        $data   = HoaDon::join('khach_hangs', 'hoa_dons.id_khach_hang', 'khach_hangs.id')
+        $data = HoaDon::join('khach_hangs', 'hoa_dons.id_khach_hang', 'khach_hangs.id')
             ->select('hoa_dons.*', 'khach_hangs.ho_lot', 'khach_hangs.ten')
             ->get();
 
-        return response()->json([
-            'data'    =>  $data,
-        ]);
+        return response()->json(['data' => $data]);
     }
 
     public function getDataKhachHang()
     {
-        $user   =  Auth::guard('sanctum')->user();
-        $data   = HoaDon::join('khach_hangs', 'hoa_dons.id_khach_hang', 'khach_hangs.id')
+        $user = Auth::guard('sanctum')->user();
+        $data = HoaDon::join('khach_hangs', 'hoa_dons.id_khach_hang', 'khach_hangs.id')
             ->where('khach_hangs.id', $user->id)
             ->select('hoa_dons.*', 'khach_hangs.ho_lot', 'khach_hangs.ten')
             ->get();
-        return response()->json([
-            'data'    =>  $data,
-        ]);
+        return response()->json(['data' => $data]);
     }
 
     public function chiTietThue(Request $request)
     {
-        $id_chuc_nang   = 60;
-        $user   =  Auth::guard('sanctum')->user();
-        $check  =   ChiTietPhanQuyen::where('id_quyen', $user->id_chuc_vu)
+        $id_chuc_nang = 60;
+        $user = Auth::guard('sanctum')->user();
+        $check = ChiTietPhanQuyen::where('id_quyen', $user->id_chuc_vu)
             ->where('id_chuc_nang', $id_chuc_nang)
             ->first();
         if (!$check) {
             return response()->json([
-                'status'    =>  false,
-                'message'   =>  'Bạn không đủ quyền truy cập chức năng này!',
+                'status'  => false,
+                'message' => 'Bạn không đủ quyền truy cập chức năng này!',
             ]);
         }
 
-        $id_hoa_don     =   $request->id;
+        $id_hoa_don = $request->id;
 
-        $data   = ChiTietThuePhong::where('id_hoa_don', $id_hoa_don)
+        $data = ChiTietThuePhong::where('id_hoa_don', $id_hoa_don)
             ->orderBy('ngay_thue')
             ->join('phongs', 'chi_tiet_thue_phongs.id_phong', 'phongs.id')
             ->join('loai_phongs', 'phongs.id_loai_phong', 'loai_phongs.id')
             ->select('chi_tiet_thue_phongs.*', 'loai_phongs.ten_loai_phong', 'phongs.ten_phong')
             ->get();
 
-        return response()->json([
-            'data'    =>  $data,
-        ]);
+        return response()->json(['data' => $data]);
     }
 
     public function chiTietThueKhachHang(Request $request)
     {
-        $id_hoa_don     =   $request->id;
+        $id_hoa_don = $request->id;
 
-        $data   = ChiTietThuePhong::where('id_hoa_don', $id_hoa_don)
+        $data = ChiTietThuePhong::where('id_hoa_don', $id_hoa_don)
             ->orderBy('ngay_thue')
             ->join('phongs', 'chi_tiet_thue_phongs.id_phong', 'phongs.id')
             ->join('loai_phongs', 'phongs.id_loai_phong', 'loai_phongs.id')
             ->select('chi_tiet_thue_phongs.*', 'loai_phongs.ten_loai_phong', 'phongs.ten_phong')
             ->get();
 
-        return response()->json([
-            'data'    =>  $data,
-        ]);
+        return response()->json(['data' => $data]);
     }
 
     public function xacNhanDonHang(Request $request)
     {
-        $id_chuc_nang   = 61;
-        $user   =  Auth::guard('sanctum')->user();
-        $check  =   ChiTietPhanQuyen::where('id_quyen', $user->id_chuc_vu)
+        $id_chuc_nang = 61;
+        $user = Auth::guard('sanctum')->user();
+        $check = ChiTietPhanQuyen::where('id_quyen', $user->id_chuc_vu)
             ->where('id_chuc_nang', $id_chuc_nang)
             ->first();
         if (!$check) {
             return response()->json([
-                'status'    =>  false,
-                'message'   =>  'Bạn không đủ quyền truy cập chức năng này!',
+                'status'  => false,
+                'message' => 'Bạn không đủ quyền truy cập chức năng này!',
             ]);
         }
 
-        if (isset($request->thanh_toan)) {
-            HoaDon::where('id', $request->id_hoa_don)->update([
-                'is_thanh_toan' => 1
-            ]);
-            ChiTietThuePhong::where('id_hoa_don', $request->id_hoa_don)->update([
-                'tinh_trang'    =>  3
-            ]);
+        if ($request->thanh_toan ?? false) {
+            HoaDon::where('id', $request->id_hoa_don)->update(['is_thanh_toan' => 1]);
+            ChiTietThuePhong::where('id_hoa_don', $request->id_hoa_don)->update(['tinh_trang' => 3]);
         } else {
-            HoaDon::where('id', $request->id_hoa_don)->update([
-                'is_thanh_toan' => -1
-            ]);
+            HoaDon::where('id', $request->id_hoa_don)->update(['is_thanh_toan' => -1]);
             ChiTietThuePhong::where('id_hoa_don', $request->id_hoa_don)->update([
-                'tinh_trang'    =>  1,
-                'id_hoa_don'    =>  null
+                'tinh_trang' => 1,
+                'id_hoa_don' => null
             ]);
         }
 
         return response()->json([
-            'status'    =>  true,
-            'message'   =>  'Đã xử lý đơn hàng thành công!',
+            'status'  => true,
+            'message' => 'Đã xử lý đơn hàng thành công!',
         ]);
     }
 
@@ -386,4 +437,118 @@ class HoaDonController extends Controller
             'list_so_luong'  => $list_so_luong,
         ]);
     }
+    // API mới – lấy đầy đủ chi tiết: phòng + dịch vụ
+    public function chiTietHoaDon($id)
+    {
+        $hoaDon = HoaDon::with('khachHang')->findOrFail($id);
+
+        $phong = DB::table('chi_tiet_thue_phongs as ct')
+            ->join('phongs as p', 'ct.id_phong', '=', 'p.id')
+            ->join('loai_phongs as lp', 'p.id_loai_phong', '=', 'lp.id')
+            ->where('ct.id_hoa_don', $id)
+            ->select(
+                'ct.ngay_thue',
+                'ct.gia_thue',
+                'p.ten_phong',
+                'lp.ten_loai_phong'
+            )
+            ->orderBy('ct.ngay_thue')
+            ->get();
+
+        $dichVu = DB::table('dich_vu_hoa_don')
+            ->join('dich_vus', 'dich_vu_hoa_don.id_dich_vu', '=', 'dich_vus.id')
+            ->where('dich_vu_hoa_don.id_hoa_don', $id)
+            ->select('dich_vus.ten_dich_vu', 'dich_vu_hoa_don.thanh_tien', 'dich_vu_hoa_don.so_luong')
+            ->get();
+
+        return response()->json([
+            'hoa_don'           => $hoaDon,
+            'phong'             => $phong,
+            'dich_vu'           => $dichVu,
+            'tong_tien_phong'   => $phong->sum('gia_thue'),
+            'tong_tien_dich_vu' => $dichVu->sum('thanh_tien'),
+        ]);
+    }
+public function layDichVuHoaDon($id_hoa_don)
+{
+    $data = DB::table('dich_vu_hoa_don')
+        ->join('dich_vus', 'dich_vu_hoa_don.id_dich_vu', '=', 'dich_vus.id')
+        ->where('dich_vu_hoa_don.id_hoa_don', $id_hoa_don)
+        ->select('dich_vus.ten_dich_vu', 'dich_vu_hoa_don.thanh_tien')
+        ->get();
+
+    return response()->json([
+        'data' => $data
+    ]);
+}
+public function chiTietFull($id)
+{
+    // LẤY CHI TIẾT PHÒNG
+    $phong = ChiTietThuePhong::where('id_hoa_don', $id)
+        ->join('phongs', 'phongs.id', 'chi_tiet_thue_phongs.id_phong')
+        ->join('loai_phongs', 'loai_phongs.id', 'phongs.id_loai_phong')
+        ->select(
+            'chi_tiet_thue_phongs.*',
+            'phongs.ten_phong',
+            'loai_phongs.ten_loai_phong',
+
+            // LẤY GIÁ THEO NGÀY (ĐÚNG VỚI DB CỦA BẠN)
+            DB::raw('loai_phongs.don_gia AS gia_thue')
+        )
+        ->get();
+
+    // LẤY CHI TIẾT DỊCH VỤ
+    $dich_vu = DB::table('chi_tiet_su_dung_dich_vus')
+        ->where('chi_tiet_su_dung_dich_vus.id_hoa_don', $id)
+        ->join('dich_vus', 'dich_vus.id', 'chi_tiet_su_dung_dich_vus.id_dich_vu')
+        ->select(
+            'chi_tiet_su_dung_dich_vus.*',
+            'dich_vus.ten_dich_vu',
+            'chi_tiet_su_dung_dich_vus.thanh_tien'
+        )
+        ->get();
+
+    return response()->json([
+        'phong'   => $phong,
+        'dich_vu' => $dich_vu,
+    ]);
+}
+
+public function layDichVuTheoHoaDon($id)
+{
+    $data = ChiTietThuePhong::where('chi_tiet_thue_phongs.id_hoa_don', $id)
+        ->join('dich_vu_khachs', 'dich_vu_khachs.id_ct_thue_phong', 'chi_tiet_thue_phongs.id')
+        ->join('dich_vus', 'dich_vus.id', 'dich_vu_khachs.id_dich_vu')
+        ->select(
+            'dich_vu_khachs.*',
+            'dich_vus.ten_dich_vu',
+            'dich_vu_khachs.thanh_tien'
+        )
+        ->get();
+
+    return response()->json([
+        'status' => true,
+        'dich_vu' => $data
+    ]);
+}
+
+// LẤY DANH SÁCH PHÒNG THEO HOÁ ĐƠN
+public function layPhongTheoHoaDon($id)
+{
+    $data = ChiTietThuePhong::where('chi_tiet_thue_phongs.id_hoa_don', $id)
+        ->join('phongs', 'phongs.id', 'chi_tiet_thue_phongs.id_phong')
+        ->join('loai_phongs', 'loai_phongs.id', 'phongs.id_loai_phong')
+        ->select(
+            'chi_tiet_thue_phongs.*',
+            'phongs.ten_phong',
+            'loai_phongs.ten_loai_phong',
+            'phongs.gia as gia_thue'
+        )
+        ->get();
+
+    return response()->json([
+        'status' => true,
+        'phong'  => $data
+    ]);
+}
 }

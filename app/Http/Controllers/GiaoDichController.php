@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Mail\ThanhToanHoaDonMail;
+
 use App\Models\ChiTietThuePhong;
 use App\Models\GiaoDich;
 use App\Models\HoaDon;
@@ -13,6 +13,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use Mockery\Expectation;
+use App\Mail\ThanhToanHoaDonMail;
 
 class GiaoDichController extends Controller
 {
