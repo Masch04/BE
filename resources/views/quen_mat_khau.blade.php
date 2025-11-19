@@ -1,614 +1,168 @@
-<!DOCTYPE html
-    PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html dir="ltr" xmlns="http://www.w3.org/1999/xhtml" xmlns:o="urn:schemas-microsoft-com:office:office" lang="vi">
-
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" style="padding:0;Margin:0">
 <head>
     <meta charset="UTF-8">
-    <meta content="width=device-width, initial-scale=1" name="viewport">
-    <meta name="x-apple-disable-message-reformatting">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta content="telephone=no" name="format-detection">
-    <title>New Template 2</title><!--[if (mso 16)]>
+    <title>Đặt lại mật khẩu</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
     <style type="text/css">
-    a {text-decoration: none;}
-    </style>
-    <![endif]--><!--[if gte mso 9]><style>sup { font-size: 100% !important; }</style><![endif]--><!--[if gte mso 9]>
-<xml>
-    <o:OfficeDocumentSettings>
-    <o:AllowPNG></o:AllowPNG>
-    <o:PixelsPerInch>96</o:PixelsPerInch>
-    </o:OfficeDocumentSettings>
-</xml>
-<![endif]-->
-    <style type="text/css">
-        #outlook a {
-            padding: 0;
+        body { margin:0; padding:0; background:#f8f9fa; font-family:'Inter', sans-serif; }
+        table { border-collapse:collapse; mso-table-lspace:0pt; mso-table-rspace:0pt; }
+        img { border:0; display:block; }
+        a { text-decoration:none; }
+        .wrapper { width:100%; table-layout:fixed; background:#f8f9fa; padding:30px 0; }
+        .main { background:#ffffff; max-width:600px; margin:0 auto; border-radius:18px; overflow:hidden; box-shadow:0 20px 50px rgba(0,0,0,0.08); }
+
+        /* Header vàng cam giống hệt 2 mail kia */
+        .header {
+            background:linear-gradient(135deg, #DBAB57, #977334);
+            padding:50px 30px;
+            text-align:center;
+            position:relative;
+            border-radius:18px 18px 0 0;
+        }
+        .header h1 {
+            font-family:'Playfair Display', serif;
+            font-size:42px;
+            color:#ffffff;
+            margin:0;
+            font-weight:700;
+            text-shadow:0 4px 15px rgba(0,0,0,0.3);
         }
 
-        .es-button {
-            mso-style-priority: 100 !important;
-            text-decoration: none !important;
+        /* Nội dung */
+        .content {
+            background:#ffffff;
+            padding:50px 45px;
+            text-align:center;
+            color:#333;
+        }
+        .content p {
+            font-size:17px;
+            line-height:1.8;
+            color:#555;
+            margin:0 0 25px 0;
+        }
+        .content strong { color:#1a1a1a; }
+
+        /* Danh sách hướng dẫn */
+        .steps {
+            text-align:left;
+            background:#fff9e6;
+            padding:25px 35px;
+            border-radius:12px;
+            margin:30px 0;
+        }
+        .steps ol {
+            padding-left:20px;
+            margin:0;
+        }
+        .steps li {
+            font-size:17px;
+            line-height:1.8;
+            margin-bottom:12px;
         }
 
-        a[x-apple-data-detectors] {
-            color: inherit !important;
-            text-decoration: none !important;
-            font-size: inherit !important;
-            font-family: inherit !important;
-            font-weight: inherit !important;
-            line-height: inherit !important;
+        /* Nút đặt lại mật khẩu */
+        .btn {
+            display:inline-block;
+            background:linear-gradient(135deg, #DBAB57, #e68a00);
+            color:#ffffff !important;
+            font-size:20px;
+            font-weight:600;
+            padding:18px 55px;
+            border-radius:50px;
+            box-shadow:0 12px 35px rgba(219,171,87,0.4);
+            transition:all 0.4s ease;
+            margin:30px 0 35px;
+            letter-spacing:0.5px;
+        }
+        .btn:hover {
+            transform:translateY(-6px);
+            box-shadow:0 18px 40px rgba(219,171,87,0.5);
+            background:linear-gradient(135deg, #e68a00, #cc7700);
         }
 
-        .es-desk-hidden {
-            display: none;
-            float: left;
-            overflow: hidden;
-            width: 0;
-            max-height: 0;
-            line-height: 0;
-            mso-hide: all;
+        /* Link dự phòng */
+        .link {
+            color:#DBAB57;
+            word-break:break-all;
+            font-size:15px;
+            background:#f8f9fa;
+            padding:15px;
+            border-radius:10px;
+            margin:25px 0;
+            display:inline-block;
+            font-family:monospace;
         }
 
-        @media only screen and (max-width:600px) {
-
-            p,
-            ul li,
-            ol li,
-            a {
-                line-height: 150% !important
-            }
-
-            h1,
-            h2,
-            h3,
-            h1 a,
-            h2 a,
-            h3 a {
-                line-height: 120% !important
-            }
-
-            h1 {
-                font-size: 36px !important;
-                text-align: left
-            }
-
-            h2 {
-                font-size: 26px !important;
-                text-align: left
-            }
-
-            h3 {
-                font-size: 20px !important;
-                text-align: left
-            }
-
-            .es-header-body h1 a,
-            .es-content-body h1 a,
-            .es-footer-body h1 a {
-                font-size: 36px !important;
-                text-align: left
-            }
-
-            .es-header-body h2 a,
-            .es-content-body h2 a,
-            .es-footer-body h2 a {
-                font-size: 26px !important;
-                text-align: left
-            }
-
-            .es-header-body h3 a,
-            .es-content-body h3 a,
-            .es-footer-body h3 a {
-                font-size: 20px !important;
-                text-align: left
-            }
-
-            .es-menu td a {
-                font-size: 12px !important
-            }
-
-            .es-header-body p,
-            .es-header-body ul li,
-            .es-header-body ol li,
-            .es-header-body a {
-                font-size: 14px !important
-            }
-
-            .es-content-body p,
-            .es-content-body ul li,
-            .es-content-body ol li,
-            .es-content-body a {
-                font-size: 14px !important
-            }
-
-            .es-footer-body p,
-            .es-footer-body ul li,
-            .es-footer-body ol li,
-            .es-footer-body a {
-                font-size: 14px !important
-            }
-
-            .es-infoblock p,
-            .es-infoblock ul li,
-            .es-infoblock ol li,
-            .es-infoblock a {
-                font-size: 12px !important
-            }
-
-            *[class="gmail-fix"] {
-                display: none !important
-            }
-
-            .es-m-txt-c,
-            .es-m-txt-c h1,
-            .es-m-txt-c h2,
-            .es-m-txt-c h3 {
-                text-align: center !important
-            }
-
-            .es-m-txt-r,
-            .es-m-txt-r h1,
-            .es-m-txt-r h2,
-            .es-m-txt-r h3 {
-                text-align: right !important
-            }
-
-            .es-m-txt-l,
-            .es-m-txt-l h1,
-            .es-m-txt-l h2,
-            .es-m-txt-l h3 {
-                text-align: left !important
-            }
-
-            .es-m-txt-r img,
-            .es-m-txt-c img,
-            .es-m-txt-l img {
-                display: inline !important
-            }
-
-            .es-button-border {
-                display: inline-block !important
-            }
-
-            a.es-button,
-            button.es-button {
-                font-size: 20px !important;
-                display: inline-block !important
-            }
-
-            .es-adaptive table,
-            .es-left,
-            .es-right {
-                width: 100% !important
-            }
-
-            .es-content table,
-            .es-header table,
-            .es-footer table,
-            .es-content,
-            .es-footer,
-            .es-header {
-                width: 100% !important;
-                max-width: 600px !important
-            }
-
-            .es-adapt-td {
-                display: block !important;
-                width: 100% !important
-            }
-
-            .adapt-img {
-                width: 100% !important;
-                height: auto !important
-            }
-
-            .es-m-p0 {
-                padding: 0 !important
-            }
-
-            .es-m-p0r {
-                padding-right: 0 !important
-            }
-
-            .es-m-p0l {
-                padding-left: 0 !important
-            }
-
-            .es-m-p0t {
-                padding-top: 0 !important
-            }
-
-            .es-m-p0b {
-                padding-bottom: 0 !important
-            }
-
-            .es-m-p20b {
-                padding-bottom: 20px !important
-            }
-
-            .es-mobile-hidden,
-            .es-hidden {
-                display: none !important
-            }
-
-            tr.es-desk-hidden,
-            td.es-desk-hidden,
-            table.es-desk-hidden {
-                width: auto !important;
-                overflow: visible !important;
-                float: none !important;
-                max-height: inherit !important;
-                line-height: inherit !important
-            }
-
-            tr.es-desk-hidden {
-                display: table-row !important
-            }
-
-            table.es-desk-hidden {
-                display: table !important
-            }
-
-            td.es-desk-menu-hidden {
-                display: table-cell !important
-            }
-
-            .es-menu td {
-                width: 1% !important
-            }
-
-            table.es-table-not-adapt,
-            .esd-block-html table {
-                width: auto !important
-            }
-
-            table.es-social {
-                display: inline-block !important
-            }
-
-            table.es-social td {
-                display: inline-block !important
-            }
-
-            .es-m-p5 {
-                padding: 5px !important
-            }
-
-            .es-m-p5t {
-                padding-top: 5px !important
-            }
-
-            .es-m-p5b {
-                padding-bottom: 5px !important
-            }
-
-            .es-m-p5r {
-                padding-right: 5px !important
-            }
-
-            .es-m-p5l {
-                padding-left: 5px !important
-            }
-
-            .es-m-p10 {
-                padding: 10px !important
-            }
-
-            .es-m-p10t {
-                padding-top: 10px !important
-            }
-
-            .es-m-p10b {
-                padding-bottom: 10px !important
-            }
-
-            .es-m-p10r {
-                padding-right: 10px !important
-            }
-
-            .es-m-p10l {
-                padding-left: 10px !important
-            }
-
-            .es-m-p15 {
-                padding: 15px !important
-            }
-
-            .es-m-p15t {
-                padding-top: 15px !important
-            }
-
-            .es-m-p15b {
-                padding-bottom: 15px !important
-            }
-
-            .es-m-p15r {
-                padding-right: 15px !important
-            }
-
-            .es-m-p15l {
-                padding-left: 15px !important
-            }
-
-            .es-m-p20 {
-                padding: 20px !important
-            }
-
-            .es-m-p20t {
-                padding-top: 20px !important
-            }
-
-            .es-m-p20r {
-                padding-right: 20px !important
-            }
-
-            .es-m-p20l {
-                padding-left: 20px !important
-            }
-
-            .es-m-p25 {
-                padding: 25px !important
-            }
-
-            .es-m-p25t {
-                padding-top: 25px !important
-            }
-
-            .es-m-p25b {
-                padding-bottom: 25px !important
-            }
-
-            .es-m-p25r {
-                padding-right: 25px !important
-            }
-
-            .es-m-p25l {
-                padding-left: 25px !important
-            }
-
-            .es-m-p30 {
-                padding: 30px !important
-            }
-
-            .es-m-p30t {
-                padding-top: 30px !important
-            }
-
-            .es-m-p30b {
-                padding-bottom: 30px !important
-            }
-
-            .es-m-p30r {
-                padding-right: 30px !important
-            }
-
-            .es-m-p30l {
-                padding-left: 30px !important
-            }
-
-            .es-m-p35 {
-                padding: 35px !important
-            }
-
-            .es-m-p35t {
-                padding-top: 35px !important
-            }
-
-            .es-m-p35b {
-                padding-bottom: 35px !important
-            }
-
-            .es-m-p35r {
-                padding-right: 35px !important
-            }
-
-            .es-m-p35l {
-                padding-left: 35px !important
-            }
-
-            .es-m-p40 {
-                padding: 40px !important
-            }
-
-            .es-m-p40t {
-                padding-top: 40px !important
-            }
-
-            .es-m-p40b {
-                padding-bottom: 40px !important
-            }
-
-            .es-m-p40r {
-                padding-right: 40px !important
-            }
-
-            .es-m-p40l {
-                padding-left: 40px !important
-            }
-
-            .es-desk-hidden {
-                display: table-row !important;
-                width: auto !important;
-                overflow: visible !important;
-                max-height: inherit !important
-            }
+        /* Footer giống mail kia */
+        .footer {
+            background:#f8f9fa;
+            padding:40px 30px;
+            text-align:center;
+            color:#777;
+            font-size:14px;
+            border-top:1px solid #eee;
         }
+        .footer strong { color:#DBAB57; }
+        .footer em { font-style:italic; color:#999; }
 
-        @media screen and (max-width:384px) {
-            .mail-message-content {
-                width: 414px !important
-            }
+        @media (max-width:600px) {
+            .wrapper { padding:15px 0; }
+            .header { padding:40px 20px; }
+            .header h1 { font-size:34px !important; }
+            .content { padding:40px 30px !important; }
+            .btn { font-size:18px; padding:16px 45px; }
+            .steps { padding:20px; }
         }
     </style>
 </head>
-
-<body
-    style="width:100%;font-family:arial, 'helvetica neue', helvetica, sans-serif;-webkit-text-size-adjust:100%;-ms-text-size-adjust:100%;padding:0;Margin:0">
-    <div dir="ltr" class="es-wrapper-color" lang="vi" style="background-color:#FAFAFA"><!--[if gte mso 9]>
-   <v:background xmlns:v="urn:schemas-microsoft-com:vml" fill="t">
-    <v:fill type="tile" color="#fafafa"></v:fill>
-   </v:background>
-  <![endif]-->
-        <table class="es-wrapper" width="100%" cellspacing="0" cellpadding="0" role="none"
-            style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px;padding:0;Margin:0;width:100%;height:100%;background-repeat:repeat;background-position:center top;background-color:#FAFAFA">
+<body>
+    <center class="wrapper">
+        <table class="main" width="100%" cellspacing="0" cellpadding="0">
+            <!-- Header vàng cam giống mail kích hoạt & xác nhận đặt phòng -->
             <tr>
-                <td valign="top" style="padding:0;Margin:0">
-                    <table cellpadding="0" cellspacing="0" class="es-content" align="center" role="none"
-                        style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px;table-layout:fixed !important;width:100%">
-                        <tr>
-                            <td align="center" style="padding:0;Margin:0">
-                                <table bgcolor="#ffffff" class="es-content-body" align="center" cellpadding="0"
-                                    cellspacing="0" role="none"
-                                    style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px;background-color:#FFFFFF;width:600px">
-                                    <tr>
-                                        <td align="left"
-                                            style="padding:0;Margin:0;padding-top:15px;padding-left:20px;padding-right:20px">
-                                            <table cellpadding="0" cellspacing="0" width="100%" role="none"
-                                                style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px">
-                                                <tr>
-                                                    <td align="center" valign="top"
-                                                        style="padding:0;Margin:0;width:560px">
-                                                        <table cellpadding="0" cellspacing="0" width="100%"
-                                                            role="presentation"
-                                                            style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px">
-                                                            <tr>
-                                                                <td align="center"
-                                                                    style="padding:0;Margin:0;padding-top:10px;padding-bottom:10px;font-size:0px">
-                                                                    <a target="_blank"
-                                                                        href="https://i.pinimg.com/736x/cc/55/23/cc55235082b0cbee0f53587c11278fb2.jpg"
-                                                                        style="-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;text-decoration:underline;color:#5C68E2;font-size:14px"><img
-                                                                            src="https://i.pinimg.com/736x/cc/55/23/cc55235082b0cbee0f53587c11278fb2.jpg"
-                                                                            alt
-                                                                            style="display:block;border:0;outline:none;text-decoration:none;-ms-interpolation-mode:bicubic"
-                                                                            width="100"></a></td>
-                                                            </tr>
-                                                            <tr>
-                                                                <td align="center" class="es-m-p0r es-m-p0l es-m-txt-c"
-                                                                    style="Margin:0;padding-top:15px;padding-bottom:15px;padding-left:40px;padding-right:40px">
-                                                                    <h1
-                                                                        style="Margin:0;line-height:55px;mso-line-height-rule:exactly;font-family:arial, 'helvetica neue', helvetica, sans-serif;font-size:46px;font-style:normal;font-weight:bold;color:#333333">
-                                                                        ĐẶT LẠI MẬT KHẨU</h1>
-                                                                </td>
-                                                            </tr>
-                                                            <tr>
-                                                                <td align="left"
-                                                                    style="padding:0;Margin:0;padding-top:10px">
-                                                                    <p
-                                                                        style="Margin:0;-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;font-family:arial, 'helvetica neue', helvetica, sans-serif;line-height:21px;color:#333333;font-size:14px">
-                                                                        <strong>Chào bạn</strong>,
-                                                                        {{ $data['ho_va_ten'] }}<br>Sau khi nhấp vào
-                                                                        nút, bạn sẽ được yêu cầu hoàn thành các bước
-                                                                        sau:</p>
-                                                                    <ol>
-                                                                        <li
-                                                                            style="-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;font-family:arial, 'helvetica neue', helvetica, sans-serif;line-height:21px;Margin-bottom:15px;margin-left:0;color:#333333;font-size:14px">
-                                                                            Nhập mật khẩu mới.</li>
-                                                                        <li
-                                                                            style="-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;font-family:arial, 'helvetica neue', helvetica, sans-serif;line-height:21px;Margin-bottom:15px;margin-left:0;color:#333333;font-size:14px">
-                                                                            Xác nhận mật khẩu mới của bạn.</li>
-                                                                        <li
-                                                                            style="-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;font-family:arial, 'helvetica neue', helvetica, sans-serif;line-height:21px;Margin-bottom:15px;margin-left:0;color:#333333;font-size:14px">
-                                                                            Nhấp vào xác nhận</li>
-                                                                    </ol>
-                                                                </td>
-                                                            </tr>
-                                                        </table>
-                                                    </td>
-                                                </tr>
-                                            </table>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td align="left"
-                                            style="padding:0;Margin:0;padding-bottom:20px;padding-left:20px;padding-right:20px">
-                                            <table cellpadding="0" cellspacing="0" width="100%" role="none"
-                                                style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px">
-                                                <tr>
-                                                    <td align="center" valign="top"
-                                                        style="padding:0;Margin:0;width:560px">
-                                                        <table cellpadding="0" cellspacing="0" width="100%"
-                                                            style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:separate;border-spacing:0px;border-radius:5px"
-                                                            role="presentation">
-                                                            <tr>
-                                                                <td align="center"
-                                                                    style="padding:0;Margin:0;padding-top:10px;padding-bottom:10px">
-                                                                    <span class="es-button-border"
-                                                                        style="border-style:solid;border-color:#2CB543;background:#5C68E2;border-width:0px;display:inline-block;border-radius:6px;width:auto"><a
-                                                                            href="{{ $data['link_ne'] }}"
-                                                                            class="es-button" target="_blank"
-                                                                            style="mso-style-priority:100 !important;text-decoration:none;-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;color:#FFFFFF;font-size:20px;padding:10px 30px 10px 30px;display:inline-block;background:#5C68E2;border-radius:6px;font-family:arial, 'helvetica neue', helvetica, sans-serif;font-weight:normal;font-style:normal;line-height:24px;width:auto;text-align:center;mso-padding-alt:0;mso-border-alt:10px solid #5C68E2;padding-left:30px;padding-right:30px">ĐẶT
-                                                                            LẠI MẬT KHẨU CỦA BẠN</a></span></td>
-                                                            </tr>
-                                                            <tr>
-                                                                <td align="center" class="es-m-txt-c"
-                                                                    style="padding:0;Margin:0;padding-top:10px">
-                                                                    <h3
-                                                                        style="Margin:0;line-height:30px;mso-line-height-rule:exactly;font-family:arial, 'helvetica neue', helvetica, sans-serif;font-size:20px;font-style:normal;font-weight:bold;color:#333333">
-                                                                        Liên kết này chỉ có giá trị cho một lần sử dụng.
-                                                                    </h3>
-                                                                </td>
-                                                            </tr>
-                                                            <tr>
-                                                                <td align="center"
-                                                                    style="padding:0;Margin:0;padding-top:10px;padding-bottom:10px">
-                                                                    <p
-                                                                        style="Margin:0;-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;font-family:arial, 'helvetica neue', helvetica, sans-serif;line-height:21px;color:#333333;font-size:14px">
-                                                                        Nếu bạn không yêu cầu đặt lại mật khẩu của mình,
-                                                                        vui lòng bỏ qua thông báo này hoặc liên hệ với
-                                                                        bộ phận dịch vụ khách hàng của chúng tôi.</p>
-                                                                </td>
-                                                            </tr>
-                                                        </table>
-                                                    </td>
-                                                </tr>
-                                            </table>
-                                        </td>
-                                    </tr>
-                                </table>
-                            </td>
-                        </tr>
-                    </table>
-                    <table cellpadding="0" cellspacing="0" class="es-footer" align="center" role="none"
-                        style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px;table-layout:fixed !important;width:100%;background-color:transparent;background-repeat:repeat;background-position:center top">
-                        <tr>
-                            <td align="center" style="padding:0;Margin:0">
-                                <table class="es-footer-body" align="center" cellpadding="0" cellspacing="0"
-                                    style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px;background-color:transparent;width:600px"
-                                    role="none">
-                                    <tr>
-                                        <td align="left"
-                                            style="Margin:0;padding-top:20px;padding-bottom:20px;padding-left:20px;padding-right:20px">
-                                            <table cellpadding="0" cellspacing="0" width="100%" role="none"
-                                                style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px">
-                                                <tr>
-                                                    <td align="left" style="padding:0;Margin:0;width:560px">
-                                                        <table cellpadding="0" cellspacing="0" width="100%"
-                                                            role="presentation"
-                                                            style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px">
-                                                            <tr>
-                                                                <td align="center"
-                                                                    style="padding:0;Margin:0;padding-bottom:35px">
-                                                                    <p
-                                                                        style="Margin:0;-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;font-family:arial, 'helvetica neue', helvetica, sans-serif;line-height:18px;color:#333333;font-size:12px">
-                                                                        © <a href="http://localhost:5173/"
-                                                                            style="-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;text-decoration:underline;color:#333333;font-size:12px">H</a>OTEL,
-                                                                        All Right Reserved.</p>
-                                                                </td>
-                                                            </tr>
-                                                        </table>
-                                                    </td>
-                                                </tr>
-                                            </table>
-                                        </td>
-                                    </tr>
-                                </table>
-                            </td>
-                        </tr>
-                    </table>
+                <td class="header">
+                    <h1>ĐẶT LẠI MẬT KHẨU</h1>
+                </td>
+            </tr>
+
+            <!-- Nội dung chính -->
+            <tr>
+                <td class="content">
+                    <p><strong>Chào bạn {{ $data['ho_va_ten'] }},</strong></p>
+                    <p>Chúng tôi đã nhận được yêu cầu đặt lại mật khẩu cho tài khoản của bạn.</p>
+                    <p>Để tiếp tục, vui lòng thực hiện các bước sau:</p>
+
+                    <div class="steps">
+                        <ol>
+                            <li>Nhập mật khẩu mới</li>
+                            <li>Xác nhận lại mật khẩu mới</li>
+                            <li>Nhấn nút xác nhận</li>
+                        </ol>
+                    </div>
+
+                    <a href="{{ $data['link_ne'] }}" class="btn">ĐẶT LẠI MẬT KHẨU CỦA BẠN</a>
+
+                    <p><strong>Lưu ý:</strong> Liên kết này chỉ có giá trị cho một lần sử dụng.</p>
+
+                    <p>Nếu nút không hoạt động, bạn có thể copy đường link sau và dán vào trình duyệt:</p>
+                    <div class="link">{{ $data['link_ne'] }}</div>
+
+                    <p>Nếu bạn không thực hiện yêu cầu này, vui lòng bỏ qua email này hoặc liên hệ với chúng tôi qua <strong>cskhaihotel@gmail.com</strong>.</p>
+                </td>
+            </tr>
+
+            <!-- Footer giống hệt mail kia -->
+            <tr>
+                <td class="footer">
+                    <p>© {{ date('Y') }} <strong>AIHOTEL</strong>. Tất cả quyền được bảo lưu.</p>
+                    <p><em>Đây là email tự động — vui lòng không trả lời email này.</em></p>
                 </td>
             </tr>
         </table>
-    </div>
+    </center>
 </body>
-
 </html>
