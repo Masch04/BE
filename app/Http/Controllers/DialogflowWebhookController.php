@@ -6,7 +6,8 @@ use Illuminate\Http\Request;
 use App\Models\Phong;
 use App\Models\LoaiPhong;
 use App\Models\HoaDon;
-use App\Models\ChiTietThuePhong; // Đảm bảo dòng này đã có
+use App\Models\ChiTietThuePhong; 
+use App\Models\DichVu;
 use Carbon\Carbon;
 
 class DialogflowWebhookController extends Controller
@@ -43,7 +44,16 @@ class DialogflowWebhookController extends Controller
             case 'HoiGiaPhongTheoLoai':
                 $fulfillmentText = $this->handleHoiGiaPhongTheoLoai($parameters);
                 break;
+              case 'HoiVeDichVu':
+                $fulfillmentText = $this->handleHoiVeDichVu();
+                break;
 
+            case 'HoiChiTietDichVu':
+                $fulfillmentText = $this->handleHoiChiTietDichVu($parameters);
+                break;
+
+
+        
             // case 'TimKiemPhongTrongTheoNgay': // THÊM DÒNG NÀY ĐỂ GỌI HÀM MỚI
             //     $fulfillmentText = $this->handleTimKiemPhongTrongTheoNgay($parameters);
             //     break;
@@ -282,6 +292,131 @@ protected function handleHoiGiaPhongTheoLoai(array $parameters): array // Thay �
 }
 
 
+/**
+     * Xử lý intent 'HoiVeDichVu'.
+     * Liệt kê danh sách các dịch vụ đang hoạt động.
+     */
+    protected function handleHoiVeDichVu()
+{
+    // 1. Lấy dữ liệu (Đảm bảo đã use App\Models\DichVu ở trên)
+    $dichVus = DichVu::where('tinh_trang', 1)->get();
+
+    // 2. Xử lý trường hợp không có dịch vụ
+    if ($dichVus->isEmpty()) {
+        return response()->json([
+            "fulfillmentText" => "Hiện tại khách sạn chưa có dịch vụ nào đang hoạt động."
+        ]);
+    }
+
+    // 3. Chuẩn bị dữ liệu cho Chips và Text
+    $options = []; 
+    $nameList = [];
+
+    foreach ($dichVus as $dv) {
+        $options[] = [
+            "text" => $dv->ten_dich_vu,
+            // Có thể thêm link hoặc image vào đây nếu muốn
+        ];
+        $nameList[] = $dv->ten_dich_vu;
+    }
+
+    $danhSachString = implode(', ', $nameList);
+
+    // 4. Cấu trúc Rich Content (Dialogflow Messenger)
+    // Lưu ý: Cấu trúc richContent là mảng lồng nhau: [ [Component1, Component2] ]
+    $richContent = [
+        [
+            [
+                "type" => "description",
+                "title" => "Danh sách dịch vụ",
+                "text" => [
+                    "Dưới đây là các dịch vụ " . count($dichVus) . " dịch vụ chúng tôi cung cấp.",
+                    "Bạn quan tâm đến dịch vụ nào?"
+                ]
+            ],
+            [
+                "type" => "chips",
+                "options" => $options
+            ]
+        ]
+    ];
+
+    // 5. Trả về JSON
+    return response()->json([
+        // fulfillmentText: Hiển thị trên Test Console và các nền tảng không hỗ trợ Rich Content (Zalo, Facebook cũ)
+        "fulfillmentText" => "Khách sạn hiện có các dịch vụ: " . $danhSachString . ". Bạn muốn biết chi tiết về dịch vụ nào?",
+        
+        // fulfillmentMessages: Hiển thị giao diện đẹp trên Web Demo / Dialogflow Messenger
+        "fulfillmentMessages" => [
+            [
+                "payload" => [
+                    "richContent" => $richContent
+                ]
+            ]
+        ]
+    ]);
+}
+    /**
+     * Xử lý intent 'HoiChiTietDichVu'.
+     * Trả về giá và thông tin của dịch vụ cụ thể.
+     */
+    protected function handleHoiChiTietDichVu(array $parameters)
+    {
+        // Giả sử trong Dialogflow bạn đặt tên tham số là 'ten_dich_vu'
+        $tenDichVu = $parameters['ten_dich_vu'] ?? null;
+
+        if (!$tenDichVu) {
+            return [
+                'fulfillmentMessages' => [
+                    ['text' => ['text' => ['Bạn muốn biết giá của dịch vụ nào? Vui lòng nói tên dịch vụ.']]]
+                ]
+            ];
+        }
+
+        // Tìm kiếm tương đối (LIKE)
+        $tenDichVuNormalized = mb_strtolower($tenDichVu, 'UTF-8');
+        $dichVu = DichVu::whereRaw('LOWER(ten_dich_vu) LIKE ?', ['%' . $tenDichVuNormalized . '%'])
+                        ->first();
+
+        if (!$dichVu) {
+            return [
+                'fulfillmentMessages' => [
+                    ['text' => ['text' => ["Rất tiếc, tôi không tìm thấy dịch vụ nào có tên là '{$tenDichVu}'. Bạn có thể hỏi 'Khách sạn có dịch vụ gì' để xem danh sách."]]]
+                ]
+            ];
+        }
+
+        // Format giá tiền
+        $giaTien = number_format($dichVu->don_gia) . " VNĐ";
+        $donVi = $dichVu->don_vi_tinh ? "/ " . $dichVu->don_vi_tinh : "";
+        $ghiChu = $dichVu->ghi_chu ? "📝 Ghi chú: " . $dichVu->ghi_chu : "";
+
+        // Trả về dạng thẻ thông tin (Info Card)
+        return [
+            'fulfillmentMessages' => [
+                [
+                    'payload' => [
+                        'richContent' => [
+                            [
+                                [
+                                    'type' => 'info',
+                                    'title' => $dichVu->ten_dich_vu,
+                                    'subtitle' => "💰 Giá: {$giaTien} {$donVi}",
+                                ],
+                                [
+                                    'type' => 'description',
+                                    'title' => 'Thông tin thêm:',
+                                    'text' => [
+                                        $ghiChu ? $ghiChu : "Dịch vụ chất lượng cao phục vụ tại phòng hoặc khu vực riêng."
+                                    ]
+                                ]
+                            ]
+                        ]
+                    ]
+                ]
+            ]
+        ];
+    }
     /**
      * Helper: Chuẩn hóa tên loại phòng để tìm kiếm linh hoạt hơn.
      * Có thể mở rộng để xử lý các từ đồng nghĩa hoặc lỗi chính tả nhỏ.
