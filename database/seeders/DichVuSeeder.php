@@ -15,16 +15,10 @@ class DichVuSeeder extends Seeder
     {
         DB::table('dich_vus')->delete();
         DB::table('dich_vus')->insert([
-            ['id' => '1' ,'ten_dich_vu' => 'Dịch vụ lễ tân 24/7', 'don_gia' => '0', 'don_vi_tinh' => 'Dịch Vụ', 'ghi_chu' => 'Phục vụ mọi yêu cầu 24/7', 'tinh_trang' => '1'],
-            ['id' => '2' ,'ten_dich_vu' => 'Dọn phòng hàng ngày', 'don_gia' => '0', 'don_vi_tinh' => 'Dịch Vụ', 'ghi_chu' => 'Dọn dẹp và sắp xếp phòng hàng ngày', 'tinh_trang' => '1'],
-            ['id' => '3' ,'ten_dich_vu' => 'Room service', 'don_gia' => '2350 ', 'don_vi_tinh' => 'Dịch Vụ', 'ghi_chu' => 'Phục vụ món ăn tận phòng', 'tinh_trang' => '1'],
-            ['id' => '4' ,'ten_dich_vu' => 'Nhà hàng', 'don_gia' => ' 2500 ', 'don_vi_tinh' => 'Người', 'ghi_chu' => 'Dịch vụ ăn uống tại nhà hàng khách sạn', 'tinh_trang' => '1'],
-            ['id' => '5' ,'ten_dich_vu' => 'Buffet sáng', 'don_gia' => ' 3200 ', 'don_vi_tinh' => 'Người', 'ghi_chu' => 'Bữa sáng buffet hoặc theo yêu cầu', 'tinh_trang' => '1'],
-            ['id' => '6' ,'ten_dich_vu' => 'WiFi', 'don_gia' => '3500 ', 'don_vi_tinh' => 'Ngày', 'ghi_chu' => 'Kết nối internet không dây', 'tinh_trang' => '1'],
-            ['id' => '7' ,'ten_dich_vu' => 'Trung tâm thể dục', 'don_gia' => '3000  ', 'don_vi_tinh' => 'Giờ', 'ghi_chu' => 'Có thiết bị gym và có thể có huấn luyện viên', 'tinh_trang' => '1'],
-            ['id' => '8' ,'ten_dich_vu' => 'Spa và wellness', 'don_gia' => '4000 ', 'don_vi_tinh' => 'Liệu pháp', 'ghi_chu' => 'Các liệu pháp thư giãn và chăm sóc sức khỏe', 'tinh_trang' => '1'],
-            ['id' => '9' ,'ten_dich_vu' => 'Dịch vụ đưa đón', 'don_gia' => '3200', 'don_vi_tinh' => 'Chuyến', 'ghi_chu' => 'Đưa đón tới các điểm cần thiết', 'tinh_trang' => '1'],
-            ['id' => '10' ,'ten_dich_vu' => 'Hội họp và sự kiện', 'don_gia' => '2000 ', 'don_vi_tinh' => 'Sự kiện', 'ghi_chu' => 'Cho thuê phòng hội họp, tổ chức sự kiện', 'tinh_trang' => '1'],
+            ['id' => '1' ,'ten_dich_vu' => 'Đưa đón sân bay', 'don_gia' => '500', 'don_vi_tinh' => 'Dịch Vụ', 'ghi_chu' => 'Xe đưa đón tận nơi, phục vụ 24/7.', 'tinh_trang' => '1'],
+            ['id' => '2' ,'ten_dich_vu' => 'Dọn phòng hàng ngày', 'don_gia' => '300', 'don_vi_tinh' => 'Dịch Vụ', 'ghi_chu' => 'Dọn dẹp, thay khăn và sắp xếp phòng mỗi ngày.', 'tinh_trang' => '1'],
+            ['id' => '3' ,'ten_dich_vu' => 'Giặt ủi', 'don_gia' => '200 ', 'don_vi_tinh' => 'Dịch Vụ', 'ghi_chu' => 'Giặt, sấy và ủi quần áo nhanh chóng.', 'tinh_trang' => '1'],
+            ['id' => '4' ,'ten_dich_vu' => 'Thuê nhiếp ảnh', 'don_gia' => ' 600 ', 'don_vi_tinh' => 'Người', 'ghi_chu' => 'Chụp ảnh chuyên nghiệp theo yêu cầu.', 'tinh_trang' => '1'],
         ]);
     }
 }

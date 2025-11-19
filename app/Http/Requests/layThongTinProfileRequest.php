@@ -14,7 +14,7 @@ class layThongTinProfileRequest extends FormRequest
     {
         return [
             'id'            => 'required|exists:khach_hangs,id',
-            'ten'           => 'required|min:3|max:50',
+            'ten'           => 'required|min:2|max:50',
             'email'         => 'required|email|unique:khach_hangs,email,' . $this->id . 'id,',
             'so_dien_thoai' => 'required|digits:10',
             'ngay_sinh'     => 'required|date|before_or_equal:today'
