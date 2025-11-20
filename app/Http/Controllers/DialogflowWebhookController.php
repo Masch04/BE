@@ -52,11 +52,15 @@ class DialogflowWebhookController extends Controller
                 $fulfillmentText = $this->handleHoiChiTietDichVu($parameters);
                 break;
 
-
-        
-            // case 'TimKiemPhongTrongTheoNgay': // THÊM DÒNG NÀY ĐỂ GỌI HÀM MỚI
-            //     $fulfillmentText = $this->handleTimKiemPhongTrongTheoNgay($parameters);
-            //     break;
+            case 'TimKiemPhongTrongTheoNgay':
+            // Gọi hàm vừa viết
+            $response = $this->handleTimKiemPhongTrongTheoNgay($parameters);
+            return response()->json($response);
+            break;
+    
+    // Trả về JSON ngay lập tức (Laravel response)
+    return response()->json($responseArray);
+    break;;
 
             default:
                 $fulfillmentText = 'Rất tiếc, tôi không hiểu yêu cầu của bạn. Bạn có thể nói rõ hơn không?';
@@ -411,6 +415,106 @@ protected function handleHoiGiaPhongTheoLoai(array $parameters): array // Thay �
                                     ]
                                 ]
                             ]
+                        ]
+                    ]
+                ]
+            ]
+        ];
+    }
+
+
+     public function handleTimKiemPhongTrongTheoNgay($parameters)
+    {
+        // 1. Nhận tham số (Giữ nguyên)
+        $dateInputRaw = $parameters['date'] ?? null;
+        $roomTypeInput = $parameters['room_type'] ?? null;
+
+        if (!$dateInputRaw) {
+            return ["fulfillmentText" => "Vui lòng cho mình biết bạn muốn tìm phòng ngày nào ạ?"];
+        }
+
+        $date = Carbon::parse($dateInputRaw)->startOfDay();
+        $today = Carbon::today();
+
+        if ($date->lt($today)) {
+            return ["fulfillmentText" => "Ngày {$date->format('d/m/Y')} đã qua. Vui lòng chọn ngày hôm nay hoặc tương lai."];
+        }
+
+        $ngayCanTim = $date->format('Y-m-d');
+
+        // 2. Truy vấn dữ liệu (Giữ nguyên)
+        $query = ChiTietThuePhong::join('phongs', 'chi_tiet_thue_phongs.id_phong', '=', 'phongs.id')
+            ->join('loai_phongs', 'phongs.id_loai_phong', '=', 'loai_phongs.id')
+            ->whereDate('chi_tiet_thue_phongs.ngay_thue', $ngayCanTim)
+            ->where('chi_tiet_thue_phongs.tinh_trang', 1) // 1 = Trống
+            ->select(
+                'loai_phongs.ten_loai_phong',
+                'loai_phongs.hinh_anh',
+                'chi_tiet_thue_phongs.gia_thue'
+            );
+
+        if ($roomTypeInput) {
+            $query->where('loai_phongs.ten_loai_phong', 'like', '%' . $roomTypeInput . '%');
+        }
+
+        $ketQua = $query->get()->groupBy('ten_loai_phong');
+
+        if ($ketQua->isEmpty()) {
+            return ["fulfillmentText" => "Rất tiếc, vào ngày {$date->format('d/m/Y')} bên mình đã hết phòng trống ạ."];
+        }
+
+        // 3. TẠO CUSTOM PAYLOAD CHO DIALOGFLOW MESSENGER
+        $richContent = [];
+
+        foreach ($ketQua as $tenLoai => $danhSachPhong) {
+            $soLuongTrong = $danhSachPhong->count();
+            $phongMau = $danhSachPhong->first();
+            $giaTien = number_format($phongMau->gia_thue, 0, ',', '.');
+            
+            // Link ảnh (Nếu database null thì lấy ảnh mạng demo)
+            $hinhAnh = $phongMau->hinh_anh ?? 'https://cdn-icons-png.flaticon.com/512/3009/3009489.png'; 
+
+            // Tạo Card Info
+            $item = [
+                "type" => "info", // Loại thẻ thông tin
+                "title" => "Phòng " . $tenLoai,
+                "subtitle" => "💰 " . $giaTien . " VNĐ | ✅ Còn: " . $soLuongTrong,
+                "image" => [
+                    "src" => [
+                        "rawUrl" => $hinhAnh
+                    ]
+                ],
+                "actionLink" => "#" // Bắt buộc phải có dòng này dù không dùng link
+            ];
+            
+            $richContent[] = $item;
+            
+            // Thêm đường kẻ phân cách cho đẹp
+            $richContent[] = ["type" => "divider"];
+        }
+
+        // Thêm các nút bấm (Chips) ở dưới cùng
+        $richContent[] = [
+            "type" => "chips",
+            "options" => [
+                [
+                    "text" => "Tìm ngày khác"
+                ]
+            ]
+        ];
+
+        // 4. Trả về kết quả chuẩn Dialogflow Messenger
+        return [
+            "fulfillmentMessages" => [
+                [
+                    "text" => [
+                        "text" => ["Dạ, vào ngày {$date->format('d/m/Y')} bên em còn các phòng này ạ:"]
+                    ]
+                ],
+                [
+                    "payload" => [
+                        "richContent" => [
+                            $richContent // Lưu ý: richContent là mảng lồng nhau
                         ]
                     ]
                 ]
