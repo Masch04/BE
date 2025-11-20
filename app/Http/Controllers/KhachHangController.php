@@ -109,7 +109,7 @@ class KhachHangController extends Controller
 
             return response()->json([
                 'status' => true,
-                'message' => "Đăng kí tài khoản thành công!"
+                'message' => "Đăng ký tài khoản thành công, vui lòng kiểm tra email!"
             ]);
         }
     }

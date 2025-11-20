@@ -63,133 +63,127 @@ class HoaDonController extends Controller
 
     // HÀM CHÍNH – ĐÃ SỬA HOÀN CHỈNH ĐỂ CÓ TIỀN DỊCH VỤ
     public function datPhong(Request $request)
-    {
-        $khach_hang = Auth::guard('sanctum')->user();
+{
+    $khach_hang = Auth::guard('sanctum')->user();
 
-        // 1. Tạo hoá đơn
-        $hoaDon = HoaDon::create([
-            'ma_hoa_don'    => Str::uuid(),
-            'id_khach_hang' => $khach_hang->id,
-            'ngay_den'      => $request->tt_dat_phong['ngay_den'],
-            'ngay_di'       => $request->tt_dat_phong['ngay_di'],
-            'tong_tien'     => 0
-        ]);
+    // 1. Tạo hoá đơn
+    $hoaDon = HoaDon::create([
+        'ma_hoa_don'    => Str::uuid(),
+        'id_khach_hang' => $khach_hang->id,
+        'ngay_den'      => $request->tt_dat_phong['ngay_den'],
+        'ngay_di'       => $request->tt_dat_phong['ngay_di'],
+        'tong_tien'     => 0
+    ]);
 
-        $tongTienPhong = 0;
-        $ngay_den = Carbon::parse($request->tt_dat_phong['ngay_den']);
-        $ngay_di  = Carbon::parse($request->tt_dat_phong['ngay_di']);
-        $temp = $ngay_den->copy();
+    $tongTienPhong = 0;
+    $ngay_den = Carbon::parse($request->tt_dat_phong['ngay_den']);
+    $ngay_di  = Carbon::parse($request->tt_dat_phong['ngay_di']);
+    $temp = $ngay_den->copy();
 
-        // 2. ĐẶT PHÒNG
-        while ($temp->lt($ngay_di)) {
-            foreach ($request->tt_loai_phong ?? [] as $loai) {
-                if (empty($loai['so_phong_dat']) || $loai['so_phong_dat'] <= 0) continue;
+    // 2. ĐẶT PHÒNG – CHỈ UPDATE TỪ 1 → 2 (CÁCH TỐT NHẤT, KHÔNG SINH RÁC)
+    while ($temp->lt($ngay_di)) {
+        foreach ($request->tt_loai_phong ?? [] as $loai) {
+            if (empty($loai['so_phong_dat']) || $loai['so_phong_dat'] <= 0) {
+                continue;
+            }
 
-                $soPhongCanDat = (int)$loai['so_phong_dat'];
-                $loaiPhongId   = $loai['id'];
+            $soPhongCanDat = (int)$loai['so_phong_dat'];
+            $loaiPhongId   = $loai['id'];
 
-                $dsPhongTrong = DB::table('phongs')
-                    ->where('id_loai_phong', $loaiPhongId)
-                    ->whereNotExists(function ($query) use ($temp) {
-                        $query->select(DB::raw(1))
-                              ->from('chi_tiet_thue_phongs')
-                              ->whereColumn('phongs.id', 'chi_tiet_thue_phongs.id_phong')
-                              ->whereDate('chi_tiet_thue_phongs.ngay_thue', $temp->toDateString())
-                              ->whereIn('chi_tiet_thue_phongs.tinh_trang', [2, 3]);
-                    })
-                    ->inRandomOrder()
-                    ->limit($soPhongCanDat)
-                    ->get();
+            // Lấy ID chi_tiet_thue_phong của các phòng trống (tinh_trang = 1)
+            $dsPhongTrongIds = ChiTietThuePhong::join('phongs', 'chi_tiet_thue_phongs.id_phong', '=', 'phongs.id')
+                ->where('phongs.id_loai_phong', $loaiPhongId)
+                ->whereDate('chi_tiet_thue_phongs.ngay_thue', $temp->toDateString())
+                ->where('chi_tiet_thue_phongs.tinh_trang', 1)
+                ->limit($soPhongCanDat)
+                ->pluck('chi_tiet_thue_phongs.id');
 
-                /** @var \stdClass{id: int, gia_mac_dinh: float} $phong */
-                foreach ($dsPhongTrong as $phong) {
-                    ChiTietThuePhong::create([
-                        'id_phong'     => $phong->id,
-                        'ngay_thue'    => $temp->toDateString(),
-                        'gia_thue'     => $phong->gia_mac_dinh,
-                        'tinh_trang'   => 2,
-                        'id_hoa_don'   => $hoaDon->id,
-                        'created_at'   => now(),
-                        'updated_at'   => now(),
+            if ($dsPhongTrongIds->isNotEmpty()) {
+                // Update trực tiếp từ trống → đặt cọc
+                ChiTietThuePhong::whereIn('id', $dsPhongTrongIds)
+                    ->update([
+                        'tinh_trang' => 2,
+                        'id_hoa_don' => $hoaDon->id
                     ]);
 
-                    $tongTienPhong += $phong->gia_mac_dinh;
-                }
-            }
-            $temp->addDay();
-        }
-
-        // 3. DỊCH VỤ - KHÔNG FORMAT Ở ĐÂY NỮA
-        $tongTienDichVu = 0;
-        $chiTietDichVu  = [];
-
-        if ($request->has('ds_dich_vu') && is_array($request->ds_dich_vu)) {
-            foreach ($request->ds_dich_vu as $dv) {
-                $id_dich_vu = $dv['id'] ?? 0;
-                $don_gia    = (int)($dv['don_gia'] ?? 0);
-                if ($id_dich_vu > 0 && $don_gia > 0) {
-                    DB::table('dich_vu_hoa_don')->insert([
-                        'id_hoa_don' => $hoaDon->id,
-                        'id_dich_vu' => $id_dich_vu,
-                        'so_luong'   => 1,
-                        'thanh_tien' => $don_gia,
-                        'created_at' => now(),
-                        'updated_at' => now(),
-                    ]);
-
-                    $ten_dv = DB::table('dich_vus')->where('id', $id_dich_vu)->value('ten_dich_vu') ?? 'Dịch vụ';
-
-                    $chiTietDichVu[] = [
-                        'ten'        => $ten_dv,
-                        'so_luong'   => 1,
-                        'don_gia'    => $don_gia,        // số thô
-                        'thanh_tien' => $don_gia         // số thô để tính đúng
-                    ];
-                    $tongTienDichVu += $don_gia;
-                }
+                // Tính tiền phòng
+                $tongTienPhong += ChiTietThuePhong::whereIn('id', $dsPhongTrongIds)->sum('gia_thue');
             }
         }
-
-        // 4. Cập nhật tổng tiền
-        $hoaDon->tong_tien = $tongTienPhong + $tongTienDichVu;
-        $hoaDon->save();
-
-        // 5. GỬI MAIL - FIX QR + HIỂN THỊ TIỀN DỊCH VỤ CHUẨN
-        $qrCodeUrl = null;
-        try {
-            $potentialQr = "https://img.vietqr.io/image/MB-1700116117118-compact.jpg?amount={$hoaDon->tong_tien}&addInfo=TTDP{$hoaDon->id}";
-            if (strlen($potentialQr) < 2000) {
-                $qrCodeUrl = $potentialQr;
-            }
-        } catch (\Throwable $e) {
-            Log::warning('QR bị lỗi cho hóa đơn ' . $hoaDon->id);
-        }
-
-        $mailData = [
-            'ho_va_ten'        => trim($khach_hang->ho_lot . ' ' . $khach_hang->ten),
-            'tu_ngay'          => Carbon::parse($hoaDon->ngay_den)->format('d/m/Y'),
-            'den_ngay'         => Carbon::parse($hoaDon->ngay_di)->format('d/m/Y'),
-            'so_dem'           => $ngay_den->diffInDays($ngay_di),
-            'tien_phong'       => $tongTienPhong,
-            'tien_dich_vu'     => $tongTienDichVu,
-            'chi_tiet_dich_vu' => $chiTietDichVu,
-            'tong_tien'        => $hoaDon->tong_tien,
-            'ma_qr_code'       => $qrCodeUrl,
-        ];
-
-        try {
-            Mail::send('xac_nhan_don_hang', $mailData, function ($message) use ($khach_hang) {
-                $message->to($khach_hang->email)->subject('XÁC NHẬN ĐẶT PHÒNG THÀNH CÔNG');
-            });
-        } catch (\Exception $e) {
-            Log::error('Lỗi gửi mail hóa đơn ' . $hoaDon->id . ': ' . $e->getMessage());
-        }
-
-        return response()->json([
-            'status'  => true,
-            'message' => 'Đặt phòng thành công! Vui lòng kiểm tra email.'
-        ]);
+        $temp->addDay();
     }
+
+    // 3. DỊCH VỤ BỔ SUNG
+    $tongTienDichVu = 0;
+    $chiTietDichVu  = [];
+
+    if ($request->has('ds_dich_vu') && is_array($request->ds_dich_vu)) {
+        foreach ($request->ds_dich_vu as $dv) {
+            $id_dich_vu = $dv['id'] ?? 0;
+            $don_gia    = (int)($dv['don_gia'] ?? 0);
+            if ($id_dich_vu > 0 && $don_gia > 0) {
+                DB::table('dich_vu_hoa_don')->insert([
+                    'id_hoa_don' => $hoaDon->id,
+                    'id_dich_vu' => $id_dich_vu,
+                    'so_luong'   => 1,
+                    'thanh_tien' => $don_gia,
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ]);
+
+                $ten_dv = DB::table('dich_vus')->where('id', $id_dich_vu)->value('ten_dich_vu') ?? 'Dịch vụ';
+
+                $chiTietDichVu[] = [
+                    'ten'        => $ten_dv,
+                    'so_luong'   => 1,
+                    'don_gia'    => $don_gia,
+                    'thanh_tien' => $don_gia
+                ];
+                $tongTienDichVu += $don_gia;
+            }
+        }
+    }
+
+    // 4. CẬP NHẬT TỔNG TIỀN
+    $hoaDon->tong_tien = $tongTienPhong + $tongTienDichVu;
+    $hoaDon->save();
+
+    // 5. GỬI MAIL XÁC NHẬN
+    $qrCodeUrl = null;
+    try {
+        $potentialQr = "https://img.vietqr.io/image/MB-1700116117118-compact.jpg?amount={$hoaDon->tong_tien}&addInfo=TTDP{$hoaDon->id}";
+        if (strlen($potentialQr) < 2000) {
+            $qrCodeUrl = $potentialQr;
+        }
+    } catch (\Throwable $e) {
+        Log::warning('QR bị lỗi cho hóa đơn ' . $hoaDon->id);
+    }
+
+    $mailData = [
+        'ho_va_ten'        => trim($khach_hang->ho_lot . ' ' . $khach_hang->ten),
+        'tu_ngay'          => Carbon::parse($hoaDon->ngay_den)->format('d/m/Y'),
+        'den_ngay'         => Carbon::parse($hoaDon->ngay_di)->format('d/m/Y'),
+        'so_dem'           => $ngay_den->diffInDays($ngay_di),
+        'tien_phong'       => $tongTienPhong,
+        'tien_dich_vu'     => $tongTienDichVu,
+        'chi_tiet_dich_vu' => $chiTietDichVu,
+        'tong_tien'        => $hoaDon->tong_tien,
+        'ma_qr_code'       => $qrCodeUrl,
+    ];
+
+    try {
+        Mail::send('xac_nhan_don_hang', $mailData, function ($message) use ($khach_hang) {
+            $message->to($khach_hang->email)->subject('XÁC NHẬN ĐẶT PHÒNG THÀNH CÔNG');
+        });
+    } catch (\Exception $e) {
+        Log::error('Lỗi gửi mail hóa đơn ' . $hoaDon->id . ': ' . $e->getMessage());
+    }
+
+    return response()->json([
+        'status'  => true,
+        'message' => 'Đặt phòng thành công! Vui lòng kiểm tra email.'
+    ]);
+}
     public function getData()
     {
         $id_chuc_nang = 59;

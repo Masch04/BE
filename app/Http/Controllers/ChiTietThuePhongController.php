@@ -214,77 +214,97 @@ class ChiTietThuePhongController extends Controller
     }
 
     public function danhSachHienThi(Request $request)
-    {
-        $ngayDen = $request->ngay_den;
-        $ngayDi  = $request->ngay_di;
+{
+    $ngayDen = $request->ngay_den;
+    $ngayDi  = $request->ngay_di;
 
-        if (!$ngayDen || !$ngayDi || $ngayDen >= $ngayDi) {
-            return response()->json([
-                'status'  => false,
-                'message' => 'Ngày đến và ngày đi không hợp lệ!'
-            ]);
-        }
-
-        // Lấy tất cả loại phòng đang hoạt động
-        $dsLoaiPhong = LoaiPhong::where('tinh_trang', 1)->get();
-        $result = [];
-
-        foreach ($dsLoaiPhong as $loaiPhong) {
-            $soPhongTrongToiThieu = PHP_INT_MAX;
-
-            $currentDate = Carbon::parse($ngayDen);
-            $endDate     = Carbon::parse($ngayDi);
-
-            // Kiểm tra từng ngày trong khoảng đặt
-            while ($currentDate->lt($endDate)) {
-                $ngay = $currentDate->toDateString();
-
-                $soPhongTrongTrongNgay = ChiTietThuePhong::join('phongs', 'chi_tiet_thue_phongs.id_phong', 'phongs.id')
-                    ->where('phongs.id_loai_phong', $loaiPhong->id)
-                    ->whereDate('chi_tiet_thue_phongs.ngay_thue', $ngay)
-                    ->where('chi_tiet_thue_phongs.tinh_trang', 1)  // ← SỬA ĐÚNG RỒI ĐÂY
-                    ->count();
-
-                $soPhongTrongToiThieu = min($soPhongTrongToiThieu, $soPhongTrongTrongNgay);
-                $currentDate->addDay();
-            }
-
-            // Nếu có ít nhất 1 ngày không còn phòng → bỏ qua loại phòng này
-            if ($soPhongTrongToiThieu <= 0) {
-                continue;
-            }
-
-            // Tính giá trung bình thực tế trong khoảng ngày đặt
-            $giaTB = ChiTietThuePhong::join('phongs', 'chi_tiet_thue_phongs.id_phong', 'phongs.id')
-                ->where('phongs.id_loai_phong', $loaiPhong->id)
-                ->whereDate('chi_tiet_thue_phongs.ngay_thue', '>=', $ngayDen)
-                ->whereDate('chi_tiet_thue_phongs.ngay_thue', '<', $ngayDi)
-                ->avg('chi_tiet_thue_phongs.gia_thue');
-
-            // Nếu không có dữ liệu giá (rất hiếm) → dùng giá mặc định của loại phòng
-            if (!$giaTB || $giaTB <= 0) {
-                $giaTB = $loaiPhong->gia_mac_dinh ?? 0;
-            }
-
-            $result[] = [
-                'id'                        => $loaiPhong->id,
-                'ten_loai_phong'            => $loaiPhong->ten_loai_phong,
-                'so_giuong'                 => $loaiPhong->so_giuong,
-                'so_nguoi_lon'              => $loaiPhong->so_nguoi_lon,
-                'so_tre_em'                 => $loaiPhong->so_tre_em,
-                'dien_tich'                 => $loaiPhong->dien_tich,
-                'hinh_anh'                  => $loaiPhong->hinh_anh,
-                'tien_ich'                  => $loaiPhong->tien_ich,
-                'so_phong_trong'            => $soPhongTrongToiThieu,
-                'gia_trung_binh'            => number_format((int)$giaTB, 0, ',', '.'),
-                'gia_trung_binh_ko_format'  => (int)$giaTB,
-            ];
-        }
-
+    if (!$ngayDen || !$ngayDi || $ngayDen >= $ngayDi) {
         return response()->json([
-            'status' => true,
-            'data'   => $result
+            'status'  => false,
+            'message' => 'Ngày đến và ngày đi không hợp lệ!'
         ]);
     }
 
+    // Chỉ lấy những loại phòng thực sự có phòng trống (tinh_trang = 1) trong khoảng ngày
+    $xxx = ChiTietThuePhong::join('phongs', 'chi_tiet_thue_phongs.id_phong', '=', 'phongs.id')
+        ->join('loai_phongs', 'phongs.id_loai_phong', '=', 'loai_phongs.id')
+        ->where('loai_phongs.tinh_trang', 1)
+        ->whereDate('chi_tiet_thue_phongs.ngay_thue', '>=', $ngayDen)
+        ->whereDate('chi_tiet_thue_phongs.ngay_thue', '<', $ngayDi)
+        ->where('chi_tiet_thue_phongs.tinh_trang', 1) // Chỉ phòng trống
+        ->select(
+            'loai_phongs.id',
+            'loai_phongs.ten_loai_phong',
+            'loai_phongs.so_giuong',
+            'loai_phongs.so_nguoi_lon',
+            'loai_phongs.so_tre_em',
+            'loai_phongs.dien_tich',
+            'loai_phongs.hinh_anh',
+            'loai_phongs.tien_ich',
+            'chi_tiet_thue_phongs.ngay_thue',
+            DB::raw('COUNT(*) as so_phong_trong_ngay')
+        )
+        ->groupBy(
+            'loai_phongs.id',
+            'loai_phongs.ten_loai_phong',
+            'loai_phongs.so_giuong',
+            'loai_phongs.so_nguoi_lon',
+            'loai_phongs.so_tre_em',
+            'loai_phongs.dien_tich',
+            'loai_phongs.hinh_anh',
+            'loai_phongs.tien_ich',
+            'chi_tiet_thue_phongs.ngay_thue'
+        )
+        ->get();
+
+    // Giá trung bình chỉ từ phòng trống
+    $yyy = ChiTietThuePhong::join('phongs', 'chi_tiet_thue_phongs.id_phong', '=', 'phongs.id')
+        ->join('loai_phongs', 'phongs.id_loai_phong', '=', 'loai_phongs.id')
+        ->where('loai_phongs.tinh_trang', 1)
+        ->where('chi_tiet_thue_phongs.tinh_trang', 1)
+        ->whereDate('chi_tiet_thue_phongs.ngay_thue', '>=', $ngayDen)
+        ->whereDate('chi_tiet_thue_phongs.ngay_thue', '<', $ngayDi)
+        ->select(
+            'loai_phongs.id',
+            DB::raw('AVG(chi_tiet_thue_phongs.gia_thue) as gia_trung_binh')
+        )
+        ->groupBy('loai_phongs.id')
+        ->pluck('gia_trung_binh', 'id');
+
+    // Tạo collection kết quả
+    $result = collect();
+
+    // Group theo loại phòng để tính số phòng trống ít nhất
+    $grouped = $xxx->groupBy('id');
+
+    foreach ($grouped as $loaiId => $days) {
+        $first = $days->first();
+
+        $soPhongTrongToiThieu = $days->min('so_phong_trong_ngay');
+
+        // Nếu có ngày nào hết phòng → bỏ qua loại này
+        if ($soPhongTrongToiThieu <= 0) continue;
+
+        $giaTB = $yyy[$loaiId] ?? $first->gia_mac_dinh ?? 0;
+
+        $result->push([
+            'id'                        => $first->id,
+            'ten_loai_phong'            => $first->ten_loai_phong,
+            'so_giuong'                 => $first->so_giuong,
+            'so_nguoi_lon'              => $first->so_nguoi_lon,
+            'so_tre_em'                 => $first->so_tre_em,
+            'dien_tich'                 => $first->dien_tich,
+            'hinh_anh'                  => $first->hinh_anh,
+            'tien_ich'                  => $first->tien_ich,
+            'so_phong_trong'            => (int)$soPhongTrongToiThieu,
+            'gia_trung_binh'            => number_format((int)$giaTB, 0, ',', '.'),
+            'gia_trung_binh_ko_format'  => (int)$giaTB,
+        ]);
+    }
+
+    return response()->json([
+        'status' => true,
+        'data'   => $result->values()
+    ]);
+}
 }
