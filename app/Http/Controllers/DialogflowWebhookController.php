@@ -272,7 +272,7 @@ protected function handleHoiGiaPhongTheoLoai(array $parameters): array // Thay �
                             [
                                 [
                                     'type' => 'info',
-                                    'title' => "Giá  {$loaiPhong->ten_loai_phong}",
+                                    'title' => "Giá phòng {$loaiPhong->ten_loai_phong}",
                                     'subtitle' => "💰: {$giaMacDinhFormatted}",
                                     // Bạn có thể thêm imageUrl nếu có hình ảnh cho loại phòng
                                     // 'image' => [
@@ -559,110 +559,318 @@ public function handleTimKiemPhongTrongTheoNgay($parameters)
      * @return array
      */
 protected function handleTimKiemPhongTheoMucGia(array $parameters)
-    {
-        try {
-            // 1. Lấy tham số thô
-            $amount = $parameters['amount'] ?? 0;
-            $condition = $parameters['condition'] ?? 'duoi';
+{
+    try {
+        // --- BƯỚC 1: CHUẨN BỊ DỮ LIỆU ---
+        $getValue = function ($val) {
+            return is_array($val) ? ($val[0] ?? '') : $val;
+        };
 
-            // --- LOGIC TỰ SỬA LỖI NHẬN DIỆN NGƯỢC ---
-            // Kiểm tra: Nếu 'amount' là chữ (ví dụ: "duoi") VÀ 'condition' lại là số (ví dụ: "500")
-            // Thì ta tráo đổi giá trị cho nhau.
-            if (!is_numeric($amount) && is_numeric($condition)) {
-                $temp = $amount;      // Lưu 'duoi' vào temp
-                $amount = $condition; // Gán 500 vào amount
-                $condition = $temp;   // Gán 'duoi' vào condition
-            }
-            // ----------------------------------------
+        $rawAmount = $getValue($parameters['amount'] ?? '');
+        $rawCondition = $getValue($parameters['condition'] ?? '');
 
-            // Xử lý amount nếu nó là mảng (đề phòng)
-            if (is_array($amount)) {
-                $amount = isset($amount['amount']) ? (float)$amount['amount'] : 0;
-            } else {
-                // Chỉ lấy số từ chuỗi
-                $amount = (float)preg_replace('/[^0-9.]/', '', $amount);
-            }
+        // Lấy câu chat gốc & chuẩn hóa
+        $originalText = mb_strtolower(request()->input('queryResult.queryText', ''), 'UTF-8');
+        $originalInput = $originalText; // Lưu lại để debug
+        
+        // ===== BƯỚC 1: XỬ LÝ DẤU PHẨY =====
+        $originalText = str_replace(',', '.', $originalText);
+        
+ // ===== BƯỚC 2: XỬ LÝ "RƯỠI" (ĐÃ FIX) =====
+        
+        // CASE 1: Xử lý dạng "3 củ rưỡi", "3 triệu rưỡi" -> chuyển thành "3.5 củ", "3.5 triệu"
+        // Regex này tìm: Số + (Khoảng trắng) + Đơn vị tiền + (Khoảng trắng) + Rưỡi
+        $unitsPattern = 'tr|triệu|trieu|củ|cu|m|lít|lit|loét|lốp|k|nghìn|nghin|ngàn|cành';
+        $ruoiPattern = 'rưỡi|rươi|ruoi';
+        
+        $originalText = preg_replace(
+            "/(\d+)\s*($unitsPattern)\s*($ruoiPattern)/ui", 
+            '$1.5 $2', 
+            $originalText
+        );
 
-            // Logic nhân 1000 (500 -> 500.000)
-            if ($amount > 0 && $amount < 50000) {
-                $amount = $amount * 1000;
-            }
-
-            // Chuẩn hóa condition về chữ thường để so sánh
-            $condition = strtolower((string)$condition);
-
-            // 3. Khởi tạo truy vấn
-            $query = Phong::join('loai_phongs', 'phongs.id_loai_phong', '=', 'loai_phongs.id')
-                ->select(
-                    'loai_phongs.ten_loai_phong',
-                    'loai_phongs.hinh_anh',
-                    'phongs.gia_mac_dinh'
-                );
-
-            $msgIntro = "";
-
-            // 4. Xử lý điều kiện (Thêm nhiều từ đồng nghĩa để bot thông minh hơn)
-            // Dùng strpos để bắt từ: ví dụ "rẻ hơn", "thấp hơn", "dưới" đều dính logic này
-            if (in_array($condition, ['duoi', 'rẻ hơn', 're hon', 'thấp hơn', 'thap hon', 'nhỏ hơn', 'nho hon', 'under'])) {
-                $query->where('phongs.gia_mac_dinh', '<=', $amount);
-                $msgIntro = "Tìm thấy các phòng giá RẺ HƠN " . number_format($amount) . " VNĐ:";
-            } 
-            elseif (in_array($condition, ['tren', 'trên', 'đắt hơn', 'dat hon', 'cao hơn', 'cao hon', 'lớn hơn', 'lon hon', 'over'])) {
-                $query->where('phongs.gia_mac_dinh', '>=', $amount);
-                $msgIntro = "Tìm thấy các phòng giá CAO HƠN " . number_format($amount) . " VNĐ:";
-            } 
-            else {
-                // Mặc định là tìm khoảng
-                $min = $amount - 200000;
-                $max = $amount + 200000;
-                if ($min < 0) $min = 0;
-                $query->whereBetween('phongs.gia_mac_dinh', [$min, $max]);
-                $msgIntro = "Tìm thấy các phòng giá XUNG QUANH mức " . number_format($amount) . " VNĐ:";
-            }
-
-            // Truy vấn DB
-            $ketQua = $query->orderBy('phongs.gia_mac_dinh', 'asc')->get()->unique('ten_loai_phong');
-
-            // 5. Kiểm tra kết quả
-            if ($ketQua->isEmpty()) {
-                return [
-                    'fulfillmentMessages' => [[
-                        'text' => ['text' => ["Không tìm thấy phòng nào với mức giá " . number_format($amount) . " VNĐ. Bạn thử tìm mức giá khác xem sao?"]]
-                    ]]
-                ];
-            }
-
-            // 6. Tạo Rich Content
-            $richContent = [];
-            foreach ($ketQua as $phong) {
-                $gia = number_format($phong->gia_mac_dinh, 0, ',', '.');
-                $img = $phong->hinh_anh ?: 'https://cdn-icons-png.flaticon.com/512/3009/3009489.png';
-
-                $richContent[] = [
-                    "type" => "info",
-                    "title" => $phong->ten_loai_phong,
-                    "subtitle" => "💰 {$gia} VNĐ",
-                    "image" => ["src" => ["rawUrl" => $img]],
-                    "actionLink" => "/"
-                ];
-                $richContent[] = ["type" => "divider"];
-            }
-
-            return [
-                "fulfillmentMessages" => [
-                    ["text" => ["text" => [$msgIntro]]],
-                    ["payload" => ["richContent" => [$richContent]]]
-                ]
-            ];
-
-        } catch (\Exception $e) {
+        // CASE 2: Xử lý dạng "3 rưỡi" (không có đơn vị ở giữa) -> chuyển thành "3.5"
+        // Sau khi chạy Case 1, các trường hợp còn sót lại sẽ là dạng số đứng liền chữ rưỡi
+        $originalText = preg_replace(
+            "/(\d+)\s*($ruoiPattern)/ui", 
+            '$1.5', 
+            $originalText
+        );
+        
+        // ===== BƯỚC 3: XỬ LÝ "X tr Y", "X củ Y" =====
+        if (!preg_match('/\d+\.\d+/', $originalText)) {
+            $originalText = preg_replace('/(\d+)\s*(tr|triệu|trieu)\s+(\d+)/u', '$1.$3 $2', $originalText);
+            $originalText = preg_replace('/(\d+)\s*(củ|cu)\s+(\d+)/u', '$1.$3 $2', $originalText);
+        }
+        
+        // ===== DEBUG: HIỂN thị ra response (TẠM THỜI để test) =====
+        $debugMsg = "🔍 INPUT: [{$originalInput}] → PROCESSED: [{$originalText}]";
+        \Log::info($debugMsg);
+        
+        // TẠM THỜI: Hiển thị debug message ra chatbot
+        $showDebug = false; // Đổi thành false để tắt debug
+        if ($showDebug) {
             return [
                 'fulfillmentMessages' => [[
-                    'text' => ['text' => ["Lỗi hệ thống: " . $e->getMessage()]]
+                    'text' => ['text' => [
+                        "DEBUG MODE:\n\n" .
+                        "📥 Input: {$originalInput}\n" .
+                        "📤 Processed: {$originalText}\n" .
+                        "💰 Raw Amount: {$rawAmount}\n" .
+                        "🔧 Raw Condition: {$rawCondition}"
+                    ]]
                 ]]
             ];
         }
+
+        // --- HÀM PARSE TIỀN ---
+        $parseMoney = function($num, $unitContext = '') use ($originalText) {
+            $num = (float)str_replace(',', '.', trim($num));
+            if ($num <= 0) return 0;
+            
+            $unitContext = mb_strtolower(trim($unitContext), 'UTF-8');
+
+            // Đơn vị triệu
+            $trieuUnits = ['tr', 'triệu', 'trieu', 'củ', 'cu', 'm'];
+            // Đơn vị trăm nghìn
+            $tramNghinUnits = ['lít', 'lit', 'loét', 'loet', 'lốp', 'lop', 'lớp', 'lopd'];
+            // Đơn vị nghìn
+            $nghinUnits = ['k', 'nghìn', 'nghin', 'ngàn', 'ngan', 'cành', 'canh'];
+
+            // ƯU TIÊN 1: Đơn vị trực tiếp
+            if (in_array($unitContext, $trieuUnits)) {
+                return (int)round($num * 1000000);
+            }
+            if (in_array($unitContext, $tramNghinUnits)) {
+                return (int)round($num * 100000);
+            }
+            if (in_array($unitContext, $nghinUnits)) {
+                return (int)round($num * 1000);
+            }
+
+            // ƯU TIÊN 2: Context trong câu
+            if (preg_match('/(củ|cu|triệu|trieu|tr)\b/u', $originalText)) {
+                if ($num < 100) return (int)round($num * 1000000);
+            }
+            
+            if (preg_match('/(lốp|lít|lớp|loet|lit|lop|loét)/u', $originalText)) {
+                if ($num < 1000) return (int)round($num * 100000);
+            }
+            
+            if (preg_match('/\d+\s*k\b/u', $originalText) || 
+                preg_match('/\b(nghìn|nghin|ngàn|ngan|cành|canh)\b/u', $originalText)) {
+                return (int)round($num * 1000);
+            }
+
+            // ƯU TIÊN 3: Auto-detect
+            if ($num >= 50000) return (int)round($num);
+            if ($num >= 100) return (int)round($num * 1000);
+            if ($num >= 10) return (int)round($num * 100000);
+            return (int)round($num * 1000000);
+        };
+
+        // Khởi tạo biến
+        $amount = 0;
+        $amount2 = 0;
+        $searchMode = 'normal';
+        $msgIntro = "";
+
+        // --- BƯỚC 2: XỬ LÝ KHOẢNG GIÁ (RANGE) - ĐÃ SỬA ---
+        // Regex CẢI TIẾN: Bắt số thập phân đúng cách
+        // Pattern: (Số1)(Đơn vị1?) ... (từ khóa range) ... (Số2)(Đơn vị2?)
+        if (preg_match('/(\d+(?:[.,]\d+)?)\s*([a-zàáảãạăắằẳẵặâấầẩẫậèéẻẽẹêếềểễệìíỉĩịòóỏõọôốồổỗộơớờởỡợùúủũụưứừửữựỳýỷỹỵđ]+)?\s+(?:đến|tới|den)\s+(\d+(?:[.,]\d+)?)\s*([a-zàáảãạăắằẳẵặâấầẩẫậèéẻẽẹêếềểễệìíỉĩịòóỏõọôốồổỗộơớờởỡợùúủũụưứừửữựỳýỷỹỵđ]+)?/ui', $originalText, $matches)) {
+            $searchMode = 'range';
+            
+            $num1 = $matches[1];
+            $unit1 = $matches[2] ?? '';
+            $num2 = $matches[3];
+            $unit2 = $matches[4] ?? '';
+            
+            $amount = $parseMoney($num1, $unit1);
+            $amount2 = $parseMoney($num2, $unit2);
+
+            // Đảm bảo amount <= amount2
+            if ($amount > $amount2) {
+                list($amount, $amount2) = [$amount2, $amount];
+            }
+        }
+
+        // --- BƯỚC 3: XỬ LÝ 1 SỐ CỤ THỂ (NORMAL) ---
+        if ($searchMode == 'normal') {
+            $val = 0;
+            $unit = '';
+
+            // ===== QUAN TRỌNG: ƯU TIÊN LẤY TỪ PROCESSED TEXT TRƯỚC =====
+            // Vì Dialogflow chỉ extract được "3" từ "3 củ rưỡi", không biết ".5"
+            if (preg_match('/(\d+(?:[.,]\d+)?)\s*([a-zàáảãạăắằẳẵặâấầẩẫậèéẻẽẹêếềểễệìíỉĩịòóỏõọôốồổỗộơớờởỡợùúủũụưứừửữựỳýỷỹỵđ]+)?/ui', $originalText, $m)) {
+                $val = (float)str_replace(',', '.', $m[1]);
+                $unit = $m[2] ?? '';
+            }
+            
+            // Fallback: Nếu không extract được từ text, mới dùng Dialogflow
+            if ($val <= 0) {
+                if (!empty($rawAmount) && is_numeric(preg_replace('/[^0-9.]/', '', $rawAmount))) {
+                    $val = (float)preg_replace('/[^0-9.]/', '', $rawAmount);
+                } elseif (!empty($rawCondition) && is_numeric(preg_replace('/[^0-9.]/', '', $rawCondition))) {
+                    $val = (float)preg_replace('/[^0-9.]/', '', $rawCondition);
+                }
+            }
+
+            if ($val > 0) {
+                $amount = $parseMoney($val, $unit);
+            }
+        }
+
+        // --- BƯỚC 4: XỬ LÝ TỪ KHÓA ĐỊNH TÍNH ---
+        if ($amount <= 0) {
+            $cheapKeywords = ['rẻ', 're', 'bèo', 'beo', 'hạt dẻ', 'hat de', 'sinh viên', 'sinh vien', 'mềm', 'mem', 'thấp nhất', 'tiết kiệm', 'bình dân'];
+            $luxuryKeywords = ['đắt', 'dat', 'đat', 'sang', 'xịn', 'xin', 'cao cấp', 'cao cap', 'vip', 'ngon', 'thương gia'];
+
+            $hasKeyword = function($text, $keywords) {
+                foreach ($keywords as $kw) {
+                    if (strpos($text, $kw) !== false) return true;
+                }
+                return false;
+            };
+
+            if ($hasKeyword($originalText, $cheapKeywords)) {
+                $searchMode = 'cheapest';
+            } elseif ($hasKeyword($originalText, $luxuryKeywords)) {
+                $searchMode = 'luxury';
+            } else {
+                return [
+                    'fulfillmentMessages' => [[
+                        'text' => ['text' => ["Mình chưa nghe rõ mức giá. Bạn nhập lại ví dụ: 'từ 1 củ đến 2 củ' hoặc '500k' nhé."]]
+                    ]]
+                ];
+            }
+        }
+
+        // --- BƯỚC 5: XÂY DỰNG QUERY ---
+        $query = Phong::join('loai_phongs', 'phongs.id_loai_phong', '=', 'loai_phongs.id')
+            ->select('loai_phongs.ten_loai_phong', 'loai_phongs.hinh_anh', 'phongs.gia_mac_dinh');
+
+        switch ($searchMode) {
+            case 'range':
+                $query->whereBetween('phongs.gia_mac_dinh', [$amount, $amount2]);
+                $msgIntro = "Tìm thấy các phòng có giá từ " . number_format($amount) . " đến " . number_format($amount2) . " VNĐ:";
+                break;
+
+            case 'cheapest':
+                $query->orderBy('phongs.gia_mac_dinh', 'asc')->limit(3);
+                $msgIntro = "Top các hạng phòng giá tốt nhất cho bạn:";
+                break;
+
+            case 'luxury':
+                $query->orderBy('phongs.gia_mac_dinh', 'desc')->limit(3);
+                $msgIntro = "Các hạng phòng sang trọng nhất tại khách sạn:";
+                break;
+
+            default: // Normal
+                $condition = mb_strtolower((string)$rawCondition, 'UTF-8');
+                
+                $arrDuoi = ['duoi', 'dưới', 'rẻ hơn', 're hon', 'thấp hơn', 'nhỏ hơn', 'under', 'đổ lại', 'do lai', 'quay đầu', 'quay dau'];
+                $arrTren = ['tren', 'trên', 'đắt hơn', 'cao hơn', 'lớn hơn', 'over'];
+                $arrXungQuanh = ['tầm', 'tam', 'khoảng', 'khoang', 'cỡ', 'co', 'gần', 'gan', 'around', 'xung quanh'];
+
+                $isDuoi = false;
+                $isTren = false;
+                $isXungQuanh = false;
+
+                foreach ($arrDuoi as $kw) {
+                    if (strpos($originalText, $kw) !== false) {
+                        $isDuoi = true;
+                        break;
+                    }
+                }
+
+                foreach ($arrTren as $kw) {
+                    if (strpos($originalText, $kw) !== false) {
+                        $isTren = true;
+                        break;
+                    }
+                }
+
+                foreach ($arrXungQuanh as $kw) {
+                    if (strpos($originalText, $kw) !== false) {
+                        $isXungQuanh = true;
+                        break;
+                    }
+                }
+
+                if (!empty($condition)) {
+                    if (in_array($condition, $arrDuoi)) $isDuoi = true;
+                    if (in_array($condition, $arrTren)) $isTren = true;
+                    if (in_array($condition, $arrXungQuanh)) $isXungQuanh = true;
+                }
+
+                if ($isDuoi) {
+                    $query->where('phongs.gia_mac_dinh', '<=', $amount);
+                    $msgIntro = "Tìm thấy các phòng giá RẺ HƠN hoặc BẰNG " . number_format($amount) . " VNĐ:";
+                } elseif ($isTren) {
+                    $query->where('phongs.gia_mac_dinh', '>', $amount);
+                    $msgIntro = "Tìm thấy các phòng giá CAO HƠN " . number_format($amount) . " VNĐ:";
+                } else {
+                    $margin = $amount * 0.2;
+                    if ($margin < 100000) $margin = 100000;
+                    
+                    $min = $amount - $margin;
+                    if ($min < 0) $min = 0;
+                    $max = $amount + $margin;
+
+                    $query->whereBetween('phongs.gia_mac_dinh', [$min, $max]);
+                    $msgIntro = "Tìm thấy các phòng giá XUNG QUANH " . number_format($amount) . " VNĐ";
+                }
+                break;
+        }
+
+        // --- BƯỚC 6: THỰC THI QUERY & TRẢ VỀ ---
+        $ketQua = $query->orderBy('phongs.gia_mac_dinh', 'asc')
+            ->get()
+            ->unique('ten_loai_phong')
+            ->take(10);
+
+        if ($ketQua->isEmpty()) {
+            return [
+                'fulfillmentMessages' => [[
+                    'text' => ['text' => ["Rất tiếc, không tìm thấy phòng nào phù hợp với mức giá này."]]
+                ]]
+            ];
+        }
+
+        $richContent = [];
+        foreach ($ketQua as $phong) {
+            $gia = number_format($phong->gia_mac_dinh, 0, ',', '.');
+            $img = !empty($phong->hinh_anh) 
+                ? $phong->hinh_anh 
+                : 'https://cdn-icons-png.flaticon.com/512/3009/3009489.png';
+
+            $richContent[] = [
+                "type" => "info",
+                "title" => $phong->ten_loai_phong,
+                "subtitle" => "💰 Giá: {$gia} VNĐ",
+                "image" => ["src" => ["rawUrl" => $img]],
+                "actionLink" => "/"
+            ];
+            $richContent[] = ["type" => "divider"];
+        }
+
+        return [
+            "fulfillmentMessages" => [
+                ["text" => ["text" => [$msgIntro]]],
+                ["payload" => ["richContent" => [$richContent]]]
+            ]
+        ];
+
+    } catch (\Exception $e) {
+        \Log::error('handleTimKiemPhongTheoMucGia Error: ' . $e->getMessage());
+        return [
+            'fulfillmentMessages' => [[
+                'text' => ['text' => ["Đã xảy ra lỗi khi tìm kiếm phòng. Vui lòng thử lại sau."]]
+            ]]
+        ];
     }
+}
     /**
      * Helper: Chuẩn hóa tên loại phòng để tìm kiếm linh hoạt hơn.
      * Có thể mở rộng để xử lý các từ đồng nghĩa hoặc lỗi chính tả nhỏ.
