@@ -272,7 +272,7 @@ protected function handleHoiGiaPhongTheoLoai(array $parameters): array // Thay �
                             [
                                 [
                                     'type' => 'info',
-                                    'title' => "Giá phòng {$loaiPhong->ten_loai_phong}",
+                                    'title' => "Giá  {$loaiPhong->ten_loai_phong}",
                                     'subtitle' => "💰: {$giaMacDinhFormatted}",
                                     // Bạn có thể thêm imageUrl nếu có hình ảnh cho loại phòng
                                     // 'image' => [
@@ -676,12 +676,6 @@ protected function handleTimKiemPhongTheoMucGia(array $parameters)
         return $normalized;
     }
 
-    /**
-    * Xử lý intent 'TimKiemPhongTrongTheoNgay'.
-    * Tìm kiếm phòng trống theo loại phòng và khoảng thời gian.
-    *
-    * @param array $parameters
-    * @return string
-    */
+
 
 }
