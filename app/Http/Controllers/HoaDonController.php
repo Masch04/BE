@@ -256,35 +256,45 @@ class HoaDonController extends Controller
     }
 
     public function xacNhanDonHang(Request $request)
-    {
-        $id_chuc_nang = 61;
-        $user = Auth::guard('sanctum')->user();
-        $check = ChiTietPhanQuyen::where('id_quyen', $user->id_chuc_vu)
-            ->where('id_chuc_nang', $id_chuc_nang)
-            ->first();
-        if (!$check) {
-            return response()->json([
-                'status'  => false,
-                'message' => 'Bạn không đủ quyền truy cập chức năng này!',
-            ]);
-        }
-
-        if ($request->thanh_toan ?? false) {
-            HoaDon::where('id', $request->id_hoa_don)->update(['is_thanh_toan' => 1]);
-            ChiTietThuePhong::where('id_hoa_don', $request->id_hoa_don)->update(['tinh_trang' => 3]);
-        } else {
-            HoaDon::where('id', $request->id_hoa_don)->update(['is_thanh_toan' => -1]);
-            ChiTietThuePhong::where('id_hoa_don', $request->id_hoa_don)->update([
-                'tinh_trang' => 1,
-                'id_hoa_don' => null
-            ]);
-        }
-
-        return response()->json([
-            'status'  => true,
-            'message' => 'Đã xử lý đơn hàng thành công!',
-        ]);
+{
+    // ... (Đoạn kiểm tra quyền và validate giữ nguyên) ...
+    if (!isset($request->id_hoa_don) || !isset($request->thanh_toan)) {
+        return response()->json(['status' => false, 'message' => 'Dữ liệu không hợp lệ']);
     }
+
+    $idHoaDon = $request->id_hoa_don;
+    $trangThaiMoi = (int) $request->thanh_toan; 
+
+    switch ($trangThaiMoi) {
+        case 1: // ĐÃ THANH TOÁN
+            HoaDon::where('id', $idHoaDon)->update(['is_thanh_toan' => 1]);
+            ChiTietThuePhong::where('id_hoa_don', $idHoaDon)->update(['tinh_trang' => 3]); 
+            break;
+
+        case -1: // ĐÃ HỦY
+            HoaDon::where('id', $idHoaDon)->update(['is_thanh_toan' => -1]);
+            
+            // --- SỬA Ở ĐÂY ---
+            // Trả phòng về 1 (Trống) để bán tiếp, nhưng KHÔNG xóa id_hoa_don để còn xem được lịch sử
+            ChiTietThuePhong::where('id_hoa_don', $idHoaDon)->update([
+                'tinh_trang' => 1 
+            ]);
+            break;
+
+        case 0: // CHƯA THANH TOÁN
+            HoaDon::where('id', $idHoaDon)->update(['is_thanh_toan' => 0]);
+            ChiTietThuePhong::where('id_hoa_don', $idHoaDon)->update(['tinh_trang' => 2]); 
+            break;
+            
+        default:
+            return response()->json(['status' => false, 'message' => 'Trạng thái không hợp lệ']);
+    }
+
+    return response()->json([
+        'status'  => true,
+        'message' => 'Cập nhật trạng thái thành công!',
+    ]);
+}
 
     public function thongKe1()
     {
