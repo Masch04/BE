@@ -8,6 +8,7 @@ use App\Models\LoaiPhong;
 use GuzzleHttp\Psr7\Request as Psr7Request;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Carbon\Carbon;
 
 class LoaiPhongController extends Controller
 {
@@ -174,25 +175,27 @@ class LoaiPhongController extends Controller
     }
     public function chiTiet($id)
 {
-    // Tìm loại phòng
+    // 1. Tìm loại phòng
     $loaiPhong = LoaiPhong::find($id);
 
     if (!$loaiPhong) {
         return response()->json(['status' => false, 'message' => 'Không tìm thấy'], 404);
     }
 
-    // --- ĐOẠN CODE MỚI: TÌM GIÁ TỪ BẢNG PHONGS ---
-    
-    // Tìm một phòng bất kỳ thuộc loại này để lấy giá
+    // 2. Lấy GIÁ MẶC ĐỊNH từ bảng phongs (Logic cũ của bạn)
     $phongCon = \App\Models\Phong::where('id_loai_phong', $id)->first();
-    
-    if ($phongCon) {
-        // Gán giá của phòng con vào biến loaiPhong để Vue hiển thị
-        $loaiPhong->gia_mac_dinh = $phongCon->gia_mac_dinh;
-    } else {
-        $loaiPhong->gia_mac_dinh = 0; // Nếu chưa có phòng nào thì giá = 0
-    }
-    // ----------------------------------------------
+    $loaiPhong->gia_mac_dinh = $phongCon ? $phongCon->gia_mac_dinh : 0;
+
+    // 3. --- LOGIC MỚI: TÍNH SỐ PHÒNG TRỐNG CHO HÔM NAY ---
+    // Dựa vào bảng chi_tiet_thue_phongs đã tạo sẵn dữ liệu
+    $soPhongTrong = \App\Models\ChiTietThuePhong::join('phongs', 'chi_tiet_thue_phongs.id_phong', '=', 'phongs.id')
+        ->where('phongs.id_loai_phong', $id) // Thuộc loại phòng này
+        ->whereDate('chi_tiet_thue_phongs.ngay_thue', Carbon::today()) // Tính cho ngày hôm nay
+        ->where('chi_tiet_thue_phongs.tinh_trang', 1) // 1 = Trống (theo quy ước controller cũ của bạn)
+        ->count();
+
+    $loaiPhong->so_phong_trong = $soPhongTrong;
+    // -----------------------------------------------------
 
     return response()->json([
         'status' => true,
