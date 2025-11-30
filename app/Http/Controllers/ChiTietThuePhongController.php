@@ -103,7 +103,7 @@ class ChiTietThuePhongController extends Controller
 
         $today  =   Carbon::today();
 
-        $ngayCuoiNam    = Carbon::now()->endOfMonth();
+        $ngayCuoiNam    = Carbon::now()->addMonths(3)->endOfMonth();
 
         while($today <= $ngayCuoiNam) {
             ChiTietThuePhong::firstOrCreate(
