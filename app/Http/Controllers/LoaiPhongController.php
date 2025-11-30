@@ -173,19 +173,30 @@ class LoaiPhongController extends Controller
         }
     }
     public function chiTiet($id)
-    {
-        $phong = \App\Models\LoaiPhong::find($id);
+{
+    // Tìm loại phòng
+    $loaiPhong = LoaiPhong::find($id);
 
-        if (!$phong) {
-            return response()->json([
-                'status' => false,
-                'message' => 'Không tìm thấy phòng!'
-            ], 404);
-        }
-
-        return response()->json([
-            'status' => true,
-            'data' => $phong
-        ]);
+    if (!$loaiPhong) {
+        return response()->json(['status' => false, 'message' => 'Không tìm thấy'], 404);
     }
+
+    // --- ĐOẠN CODE MỚI: TÌM GIÁ TỪ BẢNG PHONGS ---
+    
+    // Tìm một phòng bất kỳ thuộc loại này để lấy giá
+    $phongCon = \App\Models\Phong::where('id_loai_phong', $id)->first();
+    
+    if ($phongCon) {
+        // Gán giá của phòng con vào biến loaiPhong để Vue hiển thị
+        $loaiPhong->gia_mac_dinh = $phongCon->gia_mac_dinh;
+    } else {
+        $loaiPhong->gia_mac_dinh = 0; // Nếu chưa có phòng nào thì giá = 0
+    }
+    // ----------------------------------------------
+
+    return response()->json([
+        'status' => true,
+        'data' => $loaiPhong
+    ]);
+}
 }
