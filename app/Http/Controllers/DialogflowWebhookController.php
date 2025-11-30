@@ -747,8 +747,8 @@ protected function handleTimKiemPhongTheoMucGia(array $parameters)
         }
 
         // --- BƯỚC 5: XÂY DỰNG QUERY ---
-        $query = Phong::join('loai_phongs', 'phongs.id_loai_phong', '=', 'loai_phongs.id')
-            ->select('loai_phongs.ten_loai_phong', 'loai_phongs.hinh_anh', 'phongs.gia_mac_dinh');
+         $query = Phong::join('loai_phongs', 'phongs.id_loai_phong', '=', 'loai_phongs.id')
+            ->select('loai_phongs.id', 'loai_phongs.ten_loai_phong', 'loai_phongs.hinh_anh', 'phongs.gia_mac_dinh');
 
         switch ($searchMode) {
             case 'range':
@@ -838,19 +838,33 @@ protected function handleTimKiemPhongTheoMucGia(array $parameters)
             ];
         }
 
+        // =================================================================
+        // QUAN TRỌNG: BẠN THIẾU DÒNG NÀY (Khai báo địa chỉ Web Frontend)
+        // =================================================================
+        $frontendUrl = "http://localhost:5173"; 
+        // Lưu ý: Nếu web của bạn chạy port 8080 thì đổi thành 8080
+        // Nếu đã up lên host thì điền tên miền (vd: https://khachsan.com)
+
         $richContent = [];
         foreach ($ketQua as $phong) {
             $gia = number_format($phong->gia_mac_dinh, 0, ',', '.');
+            
+            // Xử lý ảnh mặc định nếu thiếu
             $img = !empty($phong->hinh_anh) 
                 ? $phong->hinh_anh 
                 : 'https://cdn-icons-png.flaticon.com/512/3009/3009489.png';
+
+            // Tạo link dẫn tới trang chi tiết
+            $linkChiTiet = $frontendUrl . "/chi-tiet-phong/" . $phong->id;
 
             $richContent[] = [
                 "type" => "info",
                 "title" => $phong->ten_loai_phong,
                 "subtitle" => "💰 Giá: {$gia} VNĐ",
                 "image" => ["src" => ["rawUrl" => $img]],
-                "actionLink" => "/"
+                
+                // Gán link vào đây để bấm vào là chuyển trang
+                "actionLink" => $linkChiTiet 
             ];
             $richContent[] = ["type" => "divider"];
         }
