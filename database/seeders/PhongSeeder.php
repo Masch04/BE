@@ -17,16 +17,16 @@ class PhongSeeder extends Seeder
 
         DB::table('phongs')->insert([
             // Loại phòng 1 - Phòng Standard
-            ['id' => '1', 'ten_phong' => 'Phòng 101', 'gia_mac_dinh' => 3000, 'tinh_trang' => '1', 'id_loai_phong' => '1'],
-            ['id' => '2', 'ten_phong' => 'Phòng 102', 'gia_mac_dinh' => 3000, 'tinh_trang' => '1', 'id_loai_phong' => '1'],
-            ['id' => '3', 'ten_phong' => 'Phòng 103', 'gia_mac_dinh' => 3000, 'tinh_trang' => '1', 'id_loai_phong' => '1'],
-            ['id' => '4', 'ten_phong' => 'Phòng 104', 'gia_mac_dinh' => 3000, 'tinh_trang' => '1', 'id_loai_phong' => '1'],
-            ['id' => '5', 'ten_phong' => 'Phòng 105', 'gia_mac_dinh' => 3000, 'tinh_trang' => '1', 'id_loai_phong' => '1'],
-            ['id' => '6', 'ten_phong' => 'Phòng 106', 'gia_mac_dinh' => 3000, 'tinh_trang' => '1', 'id_loai_phong' => '1'],
-            ['id' => '7', 'ten_phong' => 'Phòng 107', 'gia_mac_dinh' => 3000, 'tinh_trang' => '1', 'id_loai_phong' => '1'],
-            ['id' => '8', 'ten_phong' => 'Phòng 108', 'gia_mac_dinh' => 3000, 'tinh_trang' => '1', 'id_loai_phong' => '1'],
-            ['id' => '9', 'ten_phong' => 'Phòng 109', 'gia_mac_dinh' => 3000, 'tinh_trang' => '1', 'id_loai_phong' => '1'],
-            ['id' => '10', 'ten_phong' => 'Phòng 110', 'gia_mac_dinh' => 3000, 'tinh_trang' => '1', 'id_loai_phong' => '1'],
+            ['id' => '1', 'ten_phong' => 'Phòng 101', 'gia_mac_dinh' => 3000000, 'tinh_trang' => '1', 'id_loai_phong' => '1'],
+            ['id' => '2', 'ten_phong' => 'Phòng 102', 'gia_mac_dinh' => 3000000, 'tinh_trang' => '1', 'id_loai_phong' => '1'],
+            ['id' => '3', 'ten_phong' => 'Phòng 103', 'gia_mac_dinh' => 3000000, 'tinh_trang' => '1', 'id_loai_phong' => '1'],
+            ['id' => '4', 'ten_phong' => 'Phòng 104', 'gia_mac_dinh' => 3000000, 'tinh_trang' => '1', 'id_loai_phong' => '1'],
+            ['id' => '5', 'ten_phong' => 'Phòng 105', 'gia_mac_dinh' => 3000000, 'tinh_trang' => '1', 'id_loai_phong' => '1'],
+            ['id' => '6', 'ten_phong' => 'Phòng 106', 'gia_mac_dinh' => 3000000, 'tinh_trang' => '1', 'id_loai_phong' => '1'],
+            ['id' => '7', 'ten_phong' => 'Phòng 107', 'gia_mac_dinh' => 3000000, 'tinh_trang' => '1', 'id_loai_phong' => '1'],
+            ['id' => '8', 'ten_phong' => 'Phòng 108', 'gia_mac_dinh' => 3000000, 'tinh_trang' => '1', 'id_loai_phong' => '1'],
+            ['id' => '9', 'ten_phong' => 'Phòng 109', 'gia_mac_dinh' => 3000000, 'tinh_trang' => '1', 'id_loai_phong' => '1'],
+            ['id' => '10', 'ten_phong' => 'Phòng 110', 'gia_mac_dinh' =>3000000, 'tinh_trang' => '1', 'id_loai_phong' => '1'],
 
             // Loại phòng 2 - Phòng Superior
             ['id' => '11', 'ten_phong' => 'Phòng 201', 'gia_mac_dinh' => 4000, 'tinh_trang' => '1', 'id_loai_phong' => '2'],

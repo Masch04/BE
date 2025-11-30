@@ -147,7 +147,7 @@ Route::get('/client/chuyen-muc/data', [ChuyenMucController::class, 'getdataClien
 Route::get('/client/bai-viet/data/{slug_chuyen_muc}', [BaiVietController::class, 'getdataClient']);
 // data client Loại Phòng
 Route::get('/client/loai-phong/data', [LoaiPhongController::class, 'getdataClient']);
-
+Route::get('/client/loai-phong/chi-tiet/{id}', [LoaiPhongController::class, 'chiTiet']); 
 Route::get('/client/chi-tiet-bai-viet/{id}', [BaiVietController::class, 'getdataChiTietClient']);
 
 // Đăng Nhập

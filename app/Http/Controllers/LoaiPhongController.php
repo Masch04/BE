@@ -172,4 +172,20 @@ class LoaiPhongController extends Controller
             ]);
         }
     }
+    public function chiTiet($id)
+    {
+        $phong = \App\Models\LoaiPhong::find($id);
+
+        if (!$phong) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Không tìm thấy phòng!'
+            ], 404);
+        }
+
+        return response()->json([
+            'status' => true,
+            'data' => $phong
+        ]);
+    }
 }
