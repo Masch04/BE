@@ -154,6 +154,7 @@
                     @endif
 
                     <p>Mọi thắc mắc xin liên hệ: <strong>cskhaihotel@gmail.com</strong></p>
+                    <p>Nếu khách hàng muốn hủy phòng, vui lòng liên hệ hotline: <strong><em>0357989225</em></strong></p>
                 </td>
             </tr>
 
