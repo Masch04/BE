@@ -9,6 +9,8 @@ use App\Models\HoaDon;
 use App\Models\ChiTietThuePhong; 
 use App\Models\DichVu;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class DialogflowWebhookController extends Controller
 {
@@ -29,7 +31,7 @@ class DialogflowWebhookController extends Controller
         $response = [];
 
         switch ($intentName) {
-            case 'Chào_Hỏi': // Một intent ví dụ
+            case 'Chào_Hỏi': 
                 $fulfillmentText = 'Chào bạn! Tôi có thể giúp gì cho bạn về khách sạn của chúng tôi?';
                 break;
 
@@ -53,7 +55,6 @@ class DialogflowWebhookController extends Controller
                 break;
 
             case 'TimKiemPhongTrongTheoNgay':
-            // Gọi hàm vừa viết
             $response = $this->handleTimKiemPhongTrongTheoNgay($parameters);
             return response()->json($response);
             break;
@@ -108,7 +109,6 @@ protected function handleHoiVeCacLoaiPhong()
     foreach ($loaiPhongs as $lp) {
         $options[] = [
             "text" => $lp->ten_loai_phong
-            // Nếu muốn ảnh cho mỗi chip, thêm "image" => ["src" => ["rawUrl" => "https://..."]]
         ];
     }
 
@@ -147,84 +147,84 @@ protected function handleHoiVeCacLoaiPhong()
      * @return string
      */
 protected function handleHoiChiTietLoaiPhong(array $parameters)
-    {
-        $tenLoaiPhong = $parameters['ten_loai_phong'] ?? null;
-        if (!$tenLoaiPhong) {
-            return [
-                'fulfillmentMessages' => [
-                    ['text' => ['text' => ['Bạn muốn hỏi chi tiết về loại phòng nào? Vui lòng cung cấp tên loại phòng.']]]
-                ]
-            ];
-        }
-
-        $tenLoaiPhongNormalized = $this->normalizeRoomTypeName($tenLoaiPhong);
-        $loaiPhong = LoaiPhong::whereRaw('LOWER(ten_loai_phong) LIKE ?', ['%' . strtolower($tenLoaiPhongNormalized) . '%'])
-                                ->first();
-
-        if (!$loaiPhong) {
-            return [
-                'fulfillmentMessages' => [
-                    ['text' => ['text' => ["Rất tiếc, tôi không tìm thấy thông tin về loại phòng '{$tenLoaiPhong}'."]]]
-                ]
-            ];
-        }
-
-        // ===== XỬ LÝ TIỆN ÍCH =====
-        $tienIch = $loaiPhong->tien_ich;
-        $tienIch = str_replace('</p><p>', '|||', $tienIch);
-        $tienIch = strip_tags($tienIch);
-        $tienIchList = array_filter(array_map('trim', explode('|||', $tienIch)));
-
-        // Tạo array tiện ích
-        $tienIchArray = [];
-        foreach ($tienIchList as $item) {
-            $tienIchArray[] = "✅ {$item}";
-        }
-
-        // Lấy URL hình ảnh trực tiếp từ cột 'hinh_anh'
-        // Không cần dùng asset() vì đây là URL đầy đủ từ Unsplash
-        $imageUrl = $loaiPhong->hinh_anh ?? 'https://via.placeholder.com/400x200?text=No+Image';
-
+{
+    $tenLoaiPhong = $parameters['ten_loai_phong'] ?? null;
+    if (!$tenLoaiPhong) {
         return [
-    'fulfillmentMessages' => [
-        [
-            'payload' => [
-                'richContent' => [
-                    [
-                        // Card thông tin cơ bản (KHÔNG chứa hình ảnh nữa)
-                        [
-                            'type' => 'info',
-                            'title' => "{$loaiPhong->ten_loai_phong}",
-                            'subtitle' => "🛏️ {$loaiPhong->so_giuong} giường | 👥 {$loaiPhong->so_nguoi_lon} người lớn" .
-                                         ($loaiPhong->so_tre_em > 0 ? " + {$loaiPhong->so_tre_em} trẻ em" : "") .
-                                         " | 📐 {$loaiPhong->dien_tich}m²"
-                        ],
+            'fulfillmentMessages' => [
+                ['text' => ['text' => ['Bạn muốn hỏi chi tiết về loại phòng nào? Vui lòng cung cấp tên loại phòng.']]]
+            ]
+        ];
+    }
 
-                        // 👉 HÌNH ẢNH CHUYỂN XUỐNG DƯỚI — nằm ngay trước “Tiện ích nổi bật”
-                        [
-                            'type' => 'image',
-                            'rawUrl' => $imageUrl
-                        ],
+    $tenLoaiPhongNormalized = $this->normalizeRoomTypeName($tenLoaiPhong);
+    $loaiPhong = LoaiPhong::whereRaw('LOWER(ten_loai_phong) LIKE ?', ['%' . strtolower($tenLoaiPhongNormalized) . '%'])
+                            ->first();
 
-                        // Divider
-                        [
-                            'type' => 'divider'
-                        ],
+    if (!$loaiPhong) {
+        return [
+            'fulfillmentMessages' => [
+                ['text' => ['text' => ["Rất tiếc, tôi không tìm thấy thông tin về loại phòng '{$tenLoaiPhong}'."]]]
+            ]
+        ];
+    }
 
-                        // Phần tiện ích
+    // ===== XỬ LÝ TIỆN ÍCH =====
+    $tienIch = $loaiPhong->tien_ich;
+    $tienIch = str_replace('</p><p>', '|||', $tienIch);
+    $tienIch = strip_tags($tienIch);
+    $tienIchList = array_filter(array_map('trim', explode('|||', $tienIch)));
+
+    $tienIchArray = [];
+    foreach ($tienIchList as $item) {
+        $tienIchArray[] = "✅ {$item}";
+    }
+
+    // Lấy URL hình ảnh
+    $imageUrl = $loaiPhong->hinh_anh ?? 'https://via.placeholder.com/400x200?text=No+Image';
+
+    $frontendUrl = "http://localhost:5173"; 
+    $linkChiTiet = $frontendUrl . "/chi-tiet-phong/" . $loaiPhong->id;
+
+    return [
+        'fulfillmentMessages' => [
+            [
+                'payload' => [
+                    'richContent' => [
                         [
-                            'type' => 'description',
-                            'title' => '✨ Tiện ích nổi bật:',
-                            'text' => $tienIchArray
+                            // Card thông tin cơ bản
+                            [
+                                'type' => 'info',
+                                'title' => "{$loaiPhong->ten_loai_phong}",
+                                'subtitle' => "🛏️ {$loaiPhong->so_giuong} giường | 👥 {$loaiPhong->so_nguoi_lon} người lớn" .
+                                                ($loaiPhong->so_tre_em > 0 ? " + {$loaiPhong->so_tre_em} trẻ em" : "") .
+                                                " | 📐 {$loaiPhong->dien_tich}m²",
+                                'actionLink' => $linkChiTiet 
+                            ],
+                            [
+                                'type' => 'image',
+                                'rawUrl' => $imageUrl
+                            ],
+
+                            // Divider
+                            [
+                                'type' => 'divider'
+                            ],
+
+                            // Phần tiện ích
+                            [
+                                'type' => 'description',
+                                'title' => '✨ Tiện ích nổi bật:',
+                                'text' => $tienIchArray
+                            ],
                         ]
                     ]
                 ]
             ]
         ]
-    ]
-];
+    ];
+}
 
-    }
       /**
      * Xử lý intent 'HoiGiaPhongTheoLoai'.
      * Cung cấp giá mặc định của một loại phòng cụ thể.
@@ -233,7 +233,7 @@ protected function handleHoiChiTietLoaiPhong(array $parameters)
      * @return string
      */
 
-protected function handleHoiGiaPhongTheoLoai(array $parameters): array // Thay đổi kiểu trả về thành array
+protected function handleHoiGiaPhongTheoLoai(array $parameters): array
 {
     $tenLoaiPhong = $parameters['ten_loai_phong'] ?? null;
 
@@ -261,9 +261,11 @@ protected function handleHoiGiaPhongTheoLoai(array $parameters): array // Thay �
     $phong = Phong::where('id_loai_phong', $loaiPhong->id)->first();
 
     if ($phong && $phong->gia_mac_dinh) {
-        $giaMacDinhFormatted = number_format($phong->gia_mac_dinh) . " VND mỗi đêm.";
+        $giaMacDinhFormatted = number_format($phong->gia_mac_dinh, 0, ',', '.') . " VND";
+        $frontendUrl = "http://localhost:5173"; 
+        $linkChiTiet = $frontendUrl . "/chi-tiet-phong/" . $loaiPhong->id;
+        $hinhAnh = $loaiPhong->hinh_anh ?? 'https://cdn-icons-png.flaticon.com/512/3009/3009489.png';
 
-        // --- Bắt đầu thay đổi để trả về Rich Content ---
         return [
             'fulfillmentMessages' => [
                 [
@@ -273,26 +275,23 @@ protected function handleHoiGiaPhongTheoLoai(array $parameters): array // Thay �
                                 [
                                     'type' => 'info',
                                     'title' => "Giá phòng {$loaiPhong->ten_loai_phong}",
-                                    'subtitle' => "💰: {$giaMacDinhFormatted}",
-                                    // Bạn có thể thêm imageUrl nếu có hình ảnh cho loại phòng
-                                    // 'image' => [
-                                    //     'src' => ['rawUrl' => 'URL_HINH_ANH_CUA_BAN']
-                                    // ],
-                                    // Bạn có thể thêm action link nếu muốn
-                                    // 'actionLink' => 'URL_DAT_PHONG'
-                                ]
+                                    'subtitle' => "💰 Giá tham khảo: {$giaMacDinhFormatted} / đêm",
+                                    'image' => [
+                                        'src' => ['rawUrl' => $hinhAnh]
+                                    ],
+                                    'actionLink' => $linkChiTiet
+                                ],
                             ]
                         ]
                     ]
                 ]
             ]
         ];
-        // --- Kết thúc thay đổi ---
 
     } else {
         return [
             'fulfillmentMessages' => [
-                ['text' => ['text' => ["Rất tiếc, không có thông tin giá cho loại phòng {$loaiPhong->ten_loai_phong} vào lúc này."]]]
+                ['text' => ['text' => ["Rất tiếc, hiện tại chưa có giá cập nhật cho loại phòng này."]]]
             ]
         ];
     }
@@ -305,32 +304,31 @@ protected function handleHoiGiaPhongTheoLoai(array $parameters): array // Thay �
      */
     protected function handleHoiVeDichVu()
 {
-    // 1. Lấy dữ liệu (Đảm bảo đã use App\Models\DichVu ở trên)
+    // Lấy dữ liệu (Đảm bảo đã use App\Models\DichVu ở trên)
     $dichVus = DichVu::where('tinh_trang', 1)->get();
 
-    // 2. Xử lý trường hợp không có dịch vụ
+    //  Xử lý trường hợp không có dịch vụ
     if ($dichVus->isEmpty()) {
         return response()->json([
             "fulfillmentText" => "Hiện tại khách sạn chưa có dịch vụ nào đang hoạt động."
         ]);
     }
 
-    // 3. Chuẩn bị dữ liệu cho Chips và Text
+    //  Chuẩn bị dữ liệu cho Chips và Text
     $options = []; 
     $nameList = [];
 
     foreach ($dichVus as $dv) {
         $options[] = [
             "text" => $dv->ten_dich_vu,
-            // Có thể thêm link hoặc image vào đây nếu muốn
+
         ];
         $nameList[] = $dv->ten_dich_vu;
     }
 
     $danhSachString = implode(', ', $nameList);
 
-    // 4. Cấu trúc Rich Content (Dialogflow Messenger)
-    // Lưu ý: Cấu trúc richContent là mảng lồng nhau: [ [Component1, Component2] ]
+ 
     $richContent = [
         [
             [
@@ -348,12 +346,11 @@ protected function handleHoiGiaPhongTheoLoai(array $parameters): array // Thay �
         ]
     ];
 
-    // 5. Trả về JSON
+    // Trả về JSON
     return response()->json([
-        // fulfillmentText: Hiển thị trên Test Console và các nền tảng không hỗ trợ Rich Content (Zalo, Facebook cũ)
+
         "fulfillmentText" => "Khách sạn hiện có các dịch vụ: " . $danhSachString . ". Bạn muốn biết chi tiết về dịch vụ nào?",
-        
-        // fulfillmentMessages: Hiển thị giao diện đẹp trên Web Demo / Dialogflow Messenger
+
         "fulfillmentMessages" => [
             [
                 "payload" => [
@@ -369,7 +366,7 @@ protected function handleHoiGiaPhongTheoLoai(array $parameters): array // Thay �
      */
     protected function handleHoiChiTietDichVu(array $parameters)
     {
-        // Giả sử trong Dialogflow bạn đặt tên tham số là 'ten_dich_vu'
+        
         $tenDichVu = $parameters['ten_dich_vu'] ?? null;
 
         if (!$tenDichVu) {
@@ -427,129 +424,127 @@ protected function handleHoiGiaPhongTheoLoai(array $parameters): array // Thay �
 
 public function handleTimKiemPhongTrongTheoNgay($parameters)
 {
-    // 1. Nhận tham số
-    $dateInputRaw = $parameters['date'] ?? null;
-    $roomTypeInput = $parameters['room_type'] ?? null;
+    try {
+        $frontendUrl = "http://localhost:5173"; 
+        
+        $dateInputRaw = $parameters['date'] ?? null;
+        $roomTypeInput = $parameters['room_type'] ?? null; // 
+        $queryText = mb_strtolower(request()->input('queryResult.queryText', ''), 'UTF-8');
 
-    // CẤU HÌNH MÚI GIỜ VIỆT NAM (Quan trọng để tính "Hôm nay")
-    $timezone = 'Asia/Ho_Chi_Minh';
-    $now = Carbon::now($timezone);
+        $timezone = 'Asia/Ho_Chi_Minh';
+        $now = \Carbon\Carbon::now($timezone);
 
-    // 2. Xử lý ngày tháng thông minh
-    if (!$dateInputRaw) {
-        // Nếu khách không nói ngày -> Mặc định là HÔM NAY
-        $date = $now->copy();
-        $messageIntro = "Dạ, em kiểm tra phòng trống cho ngày hôm nay ({$date->format('d/m/Y')}) ạ:";
-    } else {
-        // Nếu khách có chọn ngày -> Parse ngày đó theo múi giờ VN
-        $date = Carbon::parse($dateInputRaw)->setTimezone($timezone);
-        $messageIntro = "Dạ, vào ngày {$date->format('d/m/Y')} bên em còn các phòng này ạ:";
-    }
+        // Xử lý ngày tháng
+        if ($dateInputRaw) {
+            $date = \Carbon\Carbon::parse($dateInputRaw)->setTimezone($timezone);
+            $msgDate = $date->format('d/m/Y');
+        } else {
+            if (strpos($queryText, 'mai') !== false) {
+                $date = $now->copy()->addDay();
+                $msgDate = "ngày mai (" . $date->format('d/m') . ")";
+            } elseif (strpos($queryText, 'mốt') !== false || strpos($queryText, 'kia') !== false) {
+                $date = $now->copy()->addDays(2);
+                $msgDate = "ngày mốt (" . $date->format('d/m') . ")";
+            } else {
+                $date = $now->copy();
+                $msgDate = "hôm nay (" . $date->format('d/m') . ")";
+            }
+        }
 
-    // Đưa về đầu ngày để so sánh (00:00:00)
-    $checkDate = $date->copy()->startOfDay();
-    $today = $now->copy()->startOfDay();
+        if ($date->copy()->startOfDay()->lt($now->copy()->startOfDay())) {
+            return ["fulfillmentText" => "Ngày bạn chọn đã qua rồi ạ."];
+        }
 
-    // Kiểm tra xem ngày có trong quá khứ không
-    if ($checkDate->lt($today)) {
-        return ["fulfillmentText" => "Ngày {$date->format('d/m/Y')} đã qua rồi ạ. Bạn vui lòng chọn ngày hôm nay hoặc tương lai nhé."];
-    }
+        $ngayCanTim = $date->format('Y-m-d');
 
-    $ngayCanTim = $date->format('Y-m-d');
+        //  Truy vấn cơ bản
+        $query = \App\Models\ChiTietThuePhong::join('phongs', 'chi_tiet_thue_phongs.id_phong', '=', 'phongs.id')
+            ->join('loai_phongs', 'phongs.id_loai_phong', '=', 'loai_phongs.id')
+            ->whereDate('chi_tiet_thue_phongs.ngay_thue', $ngayCanTim)
+            ->where('chi_tiet_thue_phongs.tinh_trang', 1)
+            ->select(
+                'loai_phongs.id',
+                'loai_phongs.ten_loai_phong',
+                'loai_phongs.hinh_anh',
+                \DB::raw('AVG(chi_tiet_thue_phongs.gia_thue) as gia_trung_binh'),
+                \DB::raw('COUNT(chi_tiet_thue_phongs.id) as so_luong_trong')
+            )
+            ->groupBy('loai_phongs.id', 'loai_phongs.ten_loai_phong', 'loai_phongs.hinh_anh');
 
-    // 3. Truy vấn dữ liệu (Giữ nguyên Logic của bạn)
-    $query = ChiTietThuePhong::join('phongs', 'chi_tiet_thue_phongs.id_phong', '=', 'phongs.id')
-        ->join('loai_phongs', 'phongs.id_loai_phong', '=', 'loai_phongs.id')
-        ->whereDate('chi_tiet_thue_phongs.ngay_thue', $ngayCanTim)
-        ->where('chi_tiet_thue_phongs.tinh_trang', 1) // 1 = Trống
-        ->select(
-            'loai_phongs.ten_loai_phong',
-            'loai_phongs.hinh_anh',
-            'chi_tiet_thue_phongs.gia_thue'
-        );
+        //  Bộ lọc thông minh & Sắp xếp
+        $messageIntro = "Dạ, danh sách phòng trống {$msgDate} đây ạ:";
+        $isSorted = false;
 
-    if ($roomTypeInput) {
-        // Dùng 'like' để tìm kiếm gần đúng (Ví dụ: khách nói "vip" vẫn ra "Phòng VIP")
-        $query->where('loai_phongs.ten_loai_phong', 'like', '%' . $roomTypeInput . '%');
-    }
+        // Nếu Dialogflow nhận diện được loại phòng 
+        if ($roomTypeInput) {
+            $query->where('loai_phongs.ten_loai_phong', 'like', '%' . $roomTypeInput . '%');
+            $messageIntro = "Dạ, loại phòng '{$roomTypeInput}' còn trống vào {$msgDate} đây ạ:";
+        }
+        $featureWords = ['biển', 'view', 'đôi', 'đơn', 'vip', 'suite', 'deluxe', 'family', 'gia đình'];
+        
+        foreach ($featureWords as $word) {
+            // Chỉ tìm nếu chưa có roomTypeInput (để tránh lọc trùng lặp)
+            if (!$roomTypeInput && strpos($queryText, $word) !== false) {
+                $query->where('loai_phongs.ten_loai_phong', 'like', "%{$word}%");
+                $messageIntro = "Em tìm thấy các phòng '{$word}' vào {$msgDate} ạ:";
+            }
+        }
 
-    $ketQua = $query->get()->groupBy('ten_loai_phong');
+        // Lọc giá rẻ
+        $cheapWords = ['rẻ', 'bèo', 'hạt dẻ', 'mềm'];
+        if ($this->containsAny($queryText, $cheapWords)) {
+            $query->orderBy('gia_trung_binh', 'asc');
+            $messageIntro = "Em lọc được mấy phòng giá tốt nhất cho mình nè:";
+            $isSorted = true;
+        }
 
-    // Xử lý khi không có phòng nào trống
-    if ($ketQua->isEmpty()) {
-        // Gợi ý khách tìm ngày khác
+        // Lọc giá sang
+        $luxuryWords = ['xịn', 'sang', 'cao cấp'];
+        if ($this->containsAny($queryText, $luxuryWords)) {
+            $query->orderBy('gia_trung_binh', 'desc');
+            $isSorted = true;
+        }
+
+        if (!$isSorted) {
+            $query->orderBy('gia_trung_binh', 'asc');
+        }
+
+        $ketQua = $query->take(10)->get();
+
+        // 4. Trả kết quả
+        if ($ketQua->isEmpty()) {
+            return ["fulfillmentText" => "Tiếc quá, ngày {$msgDate} bên em đã hết loại phòng bạn tìm rồi ạ."];
+        }
+
+        $richContent = [];
+        foreach ($ketQua as $phong) {
+            $giaTien = number_format($phong->gia_trung_binh, 0, ',', '.');
+            $hinhAnh = !empty($phong->hinh_anh) ? $phong->hinh_anh : 'https://cdn-icons-png.flaticon.com/512/3009/3009489.png';
+            $linkChiTiet = $frontendUrl . "/chi-tiet-phong/" . $phong->id;
+
+            $richContent[] = [
+                "type" => "info",
+                "title" => $phong->ten_loai_phong,
+                "subtitle" => "💰 {$giaTien}đ | 🔥 Còn {$phong->so_luong_trong} phòng",
+                "image" => ["src" => ["rawUrl" => $hinhAnh]],
+                "actionLink" => $linkChiTiet
+            ];
+            $richContent[] = ["type" => "divider"];
+        }
+
         return [
             "fulfillmentMessages" => [
-                [
-                    "text" => ["text" => ["Rất tiếc, ngày {$date->format('d/m/Y')} bên mình đã kín phòng rồi ạ. 😭"]]
-                ],
-                [
-                    "payload" => [
-                        "richContent" => [[
-                            [
-                                "type" => "chips",
-                                "options" => [
-                                    ["text" => "Tìm ngày khác"],
-                                    ["text" => "Xem các loại phòng"]
-                                ]
-                            ]
-                        ]]
-                    ]
-                ]
+                ["text" => ["text" => [$messageIntro]]],
+                ["payload" => ["richContent" => [$richContent]]]
             ]
         ];
+
+    } catch (\Exception $e) {
+        \Log::error('Lỗi: ' . $e->getMessage());
+        return ["fulfillmentText" => "Lỗi hệ thống: " . $e->getMessage()];
     }
-
-    // 4. TẠO RICH CONTENT (Kết quả trả về)
-    $richContent = [];
-
-    foreach ($ketQua as $tenLoai => $danhSachPhong) {
-        $soLuongTrong = $danhSachPhong->count();
-        $phongMau = $danhSachPhong->first();
-        $giaTien = number_format($phongMau->gia_thue, 0, ',', '.');
-        
-        // Link ảnh (Fallback nếu null)
-        $hinhAnh = $phongMau->hinh_anh ?? 'https://cdn-icons-png.flaticon.com/512/3009/3009489.png'; 
-
-        $item = [
-            "type" => "info",
-            "title" => "Phòng " . $tenLoai,
-            "subtitle" => "💰 " . $giaTien . " VNĐ | 🔥 Còn " . $soLuongTrong . " phòng",
-            "image" => [
-                "src" => ["rawUrl" => $hinhAnh]
-            ],
-            "actionLink" => "#" 
-        ];
-        
-        $richContent[] = $item;
-        $richContent[] = ["type" => "divider"];
-    }
-
-    // Thêm các nút gợi ý (Chips) thông minh hơn
-    $richContent[] = [
-        "type" => "chips",
-        "options" => [
-            ["text" => "Tìm ngày khác"]
-        ]
-    ];
-
-    return [
-        "fulfillmentMessages" => [
-            [
-                "text" => [
-                    "text" => [$messageIntro]
-                ]
-            ],
-            [
-                "payload" => [
-                    "richContent" => [
-                        $richContent
-                    ]
-                ]
-            ]
-        ]
-    ];
 }
+
 
 /**
      * Xử lý intent 'TimKiemPhongTheoMucGia'.
@@ -561,7 +556,7 @@ public function handleTimKiemPhongTrongTheoNgay($parameters)
 protected function handleTimKiemPhongTheoMucGia(array $parameters)
 {
     try {
-        // --- BƯỚC 1: CHUẨN BỊ DỮ LIỆU ---
+        //  CHUẨN BỊ DỮ LIỆU ---
         $getValue = function ($val) {
             return is_array($val) ? ($val[0] ?? '') : $val;
         };
@@ -573,10 +568,10 @@ protected function handleTimKiemPhongTheoMucGia(array $parameters)
         $originalText = mb_strtolower(request()->input('queryResult.queryText', ''), 'UTF-8');
         $originalInput = $originalText; // Lưu lại để debug
         
-        // ===== BƯỚC 1: XỬ LÝ DẤU PHẨY =====
+        //  XỬ LÝ DẤU PHẨY 
         $originalText = str_replace(',', '.', $originalText);
         
- // ===== BƯỚC 2: XỬ LÝ "RƯỠI" (ĐÃ FIX) =====
+        //  XỬ LÝ "RƯỠI" (ĐÃ FIX) 
         
         // CASE 1: Xử lý dạng "3 củ rưỡi", "3 triệu rưỡi" -> chuyển thành "3.5 củ", "3.5 triệu"
         // Regex này tìm: Số + (Khoảng trắng) + Đơn vị tiền + (Khoảng trắng) + Rưỡi
@@ -597,30 +592,10 @@ protected function handleTimKiemPhongTheoMucGia(array $parameters)
             $originalText
         );
         
-        // ===== BƯỚC 3: XỬ LÝ "X tr Y", "X củ Y" =====
+        //  XỬ LÝ "X tr Y", "X củ Y" 
         if (!preg_match('/\d+\.\d+/', $originalText)) {
             $originalText = preg_replace('/(\d+)\s*(tr|triệu|trieu)\s+(\d+)/u', '$1.$3 $2', $originalText);
             $originalText = preg_replace('/(\d+)\s*(củ|cu)\s+(\d+)/u', '$1.$3 $2', $originalText);
-        }
-        
-        // ===== DEBUG: HIỂN thị ra response (TẠM THỜI để test) =====
-        $debugMsg = "🔍 INPUT: [{$originalInput}] → PROCESSED: [{$originalText}]";
-        \Log::info($debugMsg);
-        
-        // TẠM THỜI: Hiển thị debug message ra chatbot
-        $showDebug = false; // Đổi thành false để tắt debug
-        if ($showDebug) {
-            return [
-                'fulfillmentMessages' => [[
-                    'text' => ['text' => [
-                        "DEBUG MODE:\n\n" .
-                        "📥 Input: {$originalInput}\n" .
-                        "📤 Processed: {$originalText}\n" .
-                        "💰 Raw Amount: {$rawAmount}\n" .
-                        "🔧 Raw Condition: {$rawCondition}"
-                    ]]
-                ]]
-            ];
         }
 
         // --- HÀM PARSE TIỀN ---
@@ -675,7 +650,7 @@ protected function handleTimKiemPhongTheoMucGia(array $parameters)
         $searchMode = 'normal';
         $msgIntro = "";
 
-        // --- BƯỚC 2: XỬ LÝ KHOẢNG GIÁ (RANGE) - ĐÃ SỬA ---
+        // - XỬ LÝ KHOẢNG GIÁ (RANGE) 
         // Regex CẢI TIẾN: Bắt số thập phân đúng cách
         // Pattern: (Số1)(Đơn vị1?) ... (từ khóa range) ... (Số2)(Đơn vị2?)
         if (preg_match('/(\d+(?:[.,]\d+)?)\s*([a-zàáảãạăắằẳẵặâấầẩẫậèéẻẽẹêếềểễệìíỉĩịòóỏõọôốồổỗộơớờởỡợùúủũụưứừửữựỳýỷỹỵđ]+)?\s+(?:đến|tới|den)\s+(\d+(?:[.,]\d+)?)\s*([a-zàáảãạăắằẳẵặâấầẩẫậèéẻẽẹêếềểễệìíỉĩịòóỏõọôốồổỗộơớờởỡợùúủũụưứừửữựỳýỷỹỵđ]+)?/ui', $originalText, $matches)) {
@@ -695,19 +670,17 @@ protected function handleTimKiemPhongTheoMucGia(array $parameters)
             }
         }
 
-        // --- BƯỚC 3: XỬ LÝ 1 SỐ CỤ THỂ (NORMAL) ---
+        //  XỬ LÝ 1 SỐ CỤ THỂ (NORMAL) ---
         if ($searchMode == 'normal') {
             $val = 0;
             $unit = '';
 
-            // ===== QUAN TRỌNG: ƯU TIÊN LẤY TỪ PROCESSED TEXT TRƯỚC =====
-            // Vì Dialogflow chỉ extract được "3" từ "3 củ rưỡi", không biết ".5"
+        
             if (preg_match('/(\d+(?:[.,]\d+)?)\s*([a-zàáảãạăắằẳẵặâấầẩẫậèéẻẽẹêếềểễệìíỉĩịòóỏõọôốồổỗộơớờởỡợùúủũụưứừửữựỳýỷỹỵđ]+)?/ui', $originalText, $m)) {
                 $val = (float)str_replace(',', '.', $m[1]);
                 $unit = $m[2] ?? '';
             }
-            
-            // Fallback: Nếu không extract được từ text, mới dùng Dialogflow
+
             if ($val <= 0) {
                 if (!empty($rawAmount) && is_numeric(preg_replace('/[^0-9.]/', '', $rawAmount))) {
                     $val = (float)preg_replace('/[^0-9.]/', '', $rawAmount);
@@ -721,7 +694,7 @@ protected function handleTimKiemPhongTheoMucGia(array $parameters)
             }
         }
 
-        // --- BƯỚC 4: XỬ LÝ TỪ KHÓA ĐỊNH TÍNH ---
+
         if ($amount <= 0) {
             $cheapKeywords = ['rẻ', 're', 'bèo', 'beo', 'hạt dẻ', 'hat de', 'sinh viên', 'sinh vien', 'mềm', 'mem', 'thấp nhất', 'tiết kiệm', 'bình dân'];
             $luxuryKeywords = ['đắt', 'dat', 'đat', 'sang', 'xịn', 'xin', 'cao cấp', 'cao cap', 'vip', 'ngon', 'thương gia'];
@@ -745,8 +718,6 @@ protected function handleTimKiemPhongTheoMucGia(array $parameters)
                 ];
             }
         }
-
-        // --- BƯỚC 5: XÂY DỰNG QUERY ---
          $query = Phong::join('loai_phongs', 'phongs.id_loai_phong', '=', 'loai_phongs.id')
             ->select('loai_phongs.id', 'loai_phongs.ten_loai_phong', 'loai_phongs.hinh_anh', 'phongs.gia_mac_dinh');
 
@@ -824,7 +795,7 @@ protected function handleTimKiemPhongTheoMucGia(array $parameters)
                 break;
         }
 
-        // --- BƯỚC 6: THỰC THI QUERY & TRẢ VỀ ---
+        // THỰC THI QUERY & TRẢ VỀ 
         $ketQua = $query->orderBy('phongs.gia_mac_dinh', 'asc')
             ->get()
             ->unique('ten_loai_phong')
@@ -838,13 +809,8 @@ protected function handleTimKiemPhongTheoMucGia(array $parameters)
             ];
         }
 
-        // =================================================================
-        // QUAN TRỌNG: BẠN THIẾU DÒNG NÀY (Khai báo địa chỉ Web Frontend)
-        // =================================================================
-        $frontendUrl = "http://localhost:5173"; 
-        // Lưu ý: Nếu web của bạn chạy port 8080 thì đổi thành 8080
-        // Nếu đã up lên host thì điền tên miền (vd: https://khachsan.com)
 
+        $frontendUrl = "http://localhost:5173"; 
         $richContent = [];
         foreach ($ketQua as $phong) {
             $gia = number_format($phong->gia_mac_dinh, 0, ',', '.');
@@ -862,8 +828,6 @@ protected function handleTimKiemPhongTheoMucGia(array $parameters)
                 "title" => $phong->ten_loai_phong,
                 "subtitle" => "💰 Giá: {$gia} VNĐ",
                 "image" => ["src" => ["rawUrl" => $img]],
-                
-                // Gán link vào đây để bấm vào là chuyển trang
                 "actionLink" => $linkChiTiet 
             ];
             $richContent[] = ["type" => "divider"];
@@ -898,6 +862,11 @@ protected function handleTimKiemPhongTheoMucGia(array $parameters)
         return $normalized;
     }
 
-
-
+  private function containsAny($str, array $keywords) {
+        foreach ($keywords as $keyword) {
+            if (str_contains($str, $keyword)) return true;
+        }
+        return false;
+    }
+    
 }
